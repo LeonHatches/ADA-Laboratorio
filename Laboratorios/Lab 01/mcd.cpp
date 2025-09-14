@@ -11,7 +11,7 @@ int algoritmoEuclides (int numero1, int numero2) {
     do {
         residuo = numero1 % numero2;
         numero1 = numero2;
-        numero2 = numero1;
+        numero2 = residuo;
 
     } while (numero2 != 0);
     
@@ -25,4 +25,8 @@ int main () {
     resultadoBucles   = algoritmoBucle(NUMERO1, NUMERO2);
     resultadoEuclides = algoritmoEuclides(NUMERO1, NUMERO2);
 
+    cout << "Resultado para A. Euclides: " << resultadoEuclides << endl;
+    cout << "Resultado para A. con bucles: " << resultadoBucles << endl;
+
+    return 0;
 }
