@@ -1,0 +1,43 @@
+# Ejecutables de Windows
+*.exe
+*.exe~
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+*.out
+
+# Archivos de depuración
+*.pdb
+*.idb
+*.ilk
+
+# Carpeta de configuración de VS Code
+.vscode/
+
+# Archivos temporales
+*.log
+*.tmp
+*.temp
+
+# Archivos de sistema de Windows
+Thumbs.db
+Desktop.ini
+
+# Archivos de respaldo de editores
+*~
+*.swp
+*.swo
+
+# Archivos de CMake (si llegas a usarlo)
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Archivos de compilación en general
+/build/
+bin/
+obj/
+
