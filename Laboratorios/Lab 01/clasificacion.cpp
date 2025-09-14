@@ -18,8 +18,25 @@ void ordenamiento (vector <string> &lista) {
 }
 
 int main () {
+
+    vector <string> lista1 = {"Daniel", "Carlos", "Beto", "Alfredo"};
+    vector <string> lista2 = lista1;
+
+    // Ordenamiento por inserción
+    cout<<"El arreglo ordenado (algoritmo) es: "<<endl;
+    ordenamiento(lista1);
     
-    
+    for (string nombre : lista1) {
+        cout<<nombre<<" "<<endl;
+    }
+
+    //Biblioteca
+    cout<<"El arreglo ordenado (biblioteca) es: "<<endl;
+    sort( lista2.begin(), lista2.end() );
+
+    for (string nombre : lista2) {
+        cout<<nombre<<" "<<endl;
+    }
 
     return 0;
 }
