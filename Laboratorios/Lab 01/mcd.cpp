@@ -2,12 +2,27 @@
 using namespace std;
 
 int algoritmoBucle (int numero1, int numero2) {
-    return 0;
+    
+    int mcd = 1;
+    for (int i = 1; i < numero2/2; i++)
+    {
+        if (numero1 % i == 0 && numero2 % i == 0)
+            mcd *= i;
+    }
+    
+    return mcd;
 }
 
 int algoritmoEuclides (int numero1, int numero2) {
-    int residuo;
 
+    // Excepciones
+    if (numero1 == 0 && numero2 == 0)
+        return -1;
+
+    if (numero2 == 0)
+        return numero1;
+
+    int residuo;    
     do {
         residuo = numero1 % numero2;
         numero1 = numero2;
@@ -15,11 +30,11 @@ int algoritmoEuclides (int numero1, int numero2) {
 
     } while (numero2 != 0);
     
-    return numero1;
+    return abs(numero1);
 }
 
 int main () {
-    const int NUMERO1 = 12, NUMERO2 = 21;
+    const int NUMERO1 = 32, NUMERO2 = 8;
     int resultadoBucles, resultadoEuclides;
 
     resultadoBucles   = algoritmoBucle(NUMERO1, NUMERO2);
