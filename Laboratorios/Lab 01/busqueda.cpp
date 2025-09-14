@@ -17,7 +17,7 @@ int algoritmoBusqueda (string clave, string texto) {
 int main () {
     string palabra = "final";
     string texto   =
-    "Un algoritmo puede dividir un problema grande en partes mas pequenas resolviendo cada parte por separado y luego combinando los resultados este metodo permite reducir la complejidad y encontrar soluciones de manera mas eficiente aplicando la idea de dividir vencer y construir la respuesta paso a paso hasta llegar al resultado final";
+    "La respuesta es un paso a paso hasta llegar al resultado final";
     
     int pos = algoritmoBusqueda(palabra, texto);
     
