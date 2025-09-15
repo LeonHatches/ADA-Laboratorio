@@ -19,7 +19,7 @@ void selection (vector <int> &arr) {
 
 int main () {
     
-    vector <int> arr = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
+    vector <int> arr = {5, 2, 9, 1, 6};
     
     cout<<"El arreglo desordenado es: "<<ends;
     for (int num : arr)
