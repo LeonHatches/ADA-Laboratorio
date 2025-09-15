@@ -20,11 +20,14 @@ void selection (vector <int> &arr) {
 int main () {
     
     vector <int> arr = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-    selection(arr);
     
-    string resultado;
+    cout<<"El arreglo desordenado es: "<<ends;
     for (int num : arr)
-         cout<<num<<" ";
+        cout<<num<<" ";
+    
+    selection(arr);
 
-    cout<<"El arreglo ordenado es: "<<resultado<<endl;
+    cout<<"\nEl arreglo ordenado es: "<<ends;
+    for (int num : arr)
+        cout<<num<<" ";
 }
