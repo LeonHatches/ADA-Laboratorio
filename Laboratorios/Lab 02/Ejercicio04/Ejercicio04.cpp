@@ -1,8 +1,20 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <sstream>
+#include <string>
 
-std::vector<std::string> cargarDatos() {
+struct Juego {
+    int id;
+    std::string titulo;
+    double calificación;
+
+    void mostrarJuego() {
+        std::cout << "Id: " << id << ", Titulo: " << titulo << ", Calificacion: " << calificación << '\n';
+    }
+};
+
+std::vector<Juego> cargarDatos() {
     std::ifstream fich("datos.txt");
 
     if (!fich.is_open()) {
@@ -11,22 +23,38 @@ std::vector<std::string> cargarDatos() {
     }
 
     std::string linea;
-    std::vector<std::string> datos;
+    std::vector<Juego> datos;
 
     while (getline(fich, linea)) {
-        datos.push_back(linea);
+        std::stringstream ss(linea);
+
+        std::string idStr, tituloStr, calificacionStr;
+
+        getline(ss, idStr, ',');
+        getline(ss, tituloStr, ',');
+        getline(ss, calificacionStr, ',');
+
+        int id = std::stoi(idStr);
+        double calificacion = std::stod(calificacionStr);
+        if (tituloStr[0] == ' ') {
+            tituloStr.erase(0, 1);
+        }
+
+        Juego juego{id, tituloStr, calificacion};
+
+        datos.push_back(juego);
     }
 
     return datos;
 }
 
-void printVector(std::vector<std::string> arr) {
-    for (std::string juego : arr) {
-        std::cout << juego << '\n';
+void mostrarJuegos(std::vector<Juego> arr) {
+    for (Juego juego : arr) {
+        juego.mostrarJuego();
     }
 }
 
 int main() {
-    std::vector<std::string> juegos = cargarDatos();
-    printVector(juegos);
+    std::vector<Juego> juegos = cargarDatos();
+        mostrarJuegos(juegos);
 }
