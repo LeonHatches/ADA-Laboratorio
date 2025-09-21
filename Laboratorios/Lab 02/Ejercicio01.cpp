@@ -10,7 +10,7 @@ void insertion (vector <T>& arr) {
 
     for (int j, i = 1 ; i < arr.size() ; i++) {
         
-        T& clave = arr[i];
+        T clave = arr[i];
 
         for (j = i-1 ; j >= 0 && arr[j] > clave ; j--) {
             arr[j+1] = arr[j];
@@ -29,6 +29,7 @@ int main () {
     vector <string> reves = {"Fernando", "Esmeralda", "Dante", "Carlos", "Banu", "Alberto"};
     vector <string> aleat = {"Carlos", "Banu", "Alberto", "Esmeralda", "Fernando", "Dante"};
 
+    // LISTA ORDENADA
     insertion(orden);
     cout<<"Lista ordenada: "<<ends;
     
@@ -37,4 +38,22 @@ int main () {
     
     cout<<endl;
     
+
+    // LISTA AL REVÉS
+    insertion(reves);
+    cout<<"Lista ordenada: "<<ends;
+    
+    for (string nombre : reves)
+        cout<<nombre<<" "<<ends;
+    
+    cout<<endl;
+
+    // LISTA ALEATORIA
+    insertion(aleat);
+    cout<<"Lista ordenada: "<<ends;
+    
+    for (string nombre : aleat)
+        cout<<nombre<<" "<<ends;
+    
+    cout<<endl;
 }
