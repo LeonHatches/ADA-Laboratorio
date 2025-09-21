@@ -4,6 +4,20 @@
 #include <sstream>
 #include <string>
 
+struct Juego {
+    int id;
+    std::string titulo;
+    double calificacion;
+
+    bool operator > (const Juego& juego) {
+        return (this-> calificacion > juego.calificacion);
+    }
+
+    bool operator < (const Juego& juego) {
+        return (this-> calificacion < juego.calificacion);
+    }
+};
+
 template <typename T>
 void insertionSort (std::vector <T>& arr) {
     for (int j, i = 1 ; i < arr.size() ; i++) {
@@ -31,24 +45,6 @@ void selectionSort (std::vector <T>& arr) {
         std::swap(arr[i], arr[min]);
     }
 }
-
-struct Juego {
-    int id;
-    std::string titulo;
-    double calificacion;
-
-    void mostrarJuego() {
-        std::cout << "Id: " << id << ", Titulo: " << titulo << ", Calificacion: " << calificacion << '\n';
-    }
-
-    bool operator > (const Juego& juego) {
-        return (this-> calificacion > juego.calificacion);
-    }
-
-    bool operator < (const Juego& juego) {
-        return (this-> calificacion < juego.calificacion);
-    }
-};
 
 Juego getGameFromLine(std::string linea) {
     std::stringstream ss(linea);
@@ -86,15 +82,25 @@ std::vector<Juego> cargarDatos() {
     return datos;
 }
 
-void mostrarJuegos(std::vector<Juego> arr) {
-    for (Juego juego : arr) {
-        juego.mostrarJuego();
+void guardarJuegos(std::vector<Juego> juegos, std::string nombreArchivo) {
+    std::ofstream salida(nombreArchivo);
+
+    salida << "id,título,calificacion\n";
+
+    for (Juego juego : juegos) {
+        salida << juego.id << ',' << juego.titulo << ',' << juego.calificacion << '\n';
     }
 }
 
 int main() {
     std::vector<Juego> juegos = cargarDatos();
-    // insertionSort(juegos);
-    selectionSort(juegos);
-    mostrarJuegos(juegos);
+    std::vector<Juego> copia = juegos;
+
+    // Ordernar con InsertionSort
+    insertionSort(juegos);
+    guardarJuegos(juegos, "insertionSort.csv");
+
+    // Ordernar con SelectionSort
+    selectionSort(copia);
+    guardarJuegos(copia, "selectionSort.csv");
 }
