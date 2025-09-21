@@ -1,32 +1,32 @@
-Rocket League
-Fall guys
-Among us 
-Left 4 dead 2
-Lethal company
-Party animals 
-R.E.P.O.
-Human Fall Flat
-Peak
-Ultimate Chicken Horse
-Duck Game
-Crab game
-Tricky towers
-Stick fight
-Pico Park
-Muck
-Project Zomboid
-Half life
-Deltarune
-Silksong
-Hollow Knight
-Undertale
-Plants vs Zombies
-Cuphead
-Overcook
-Castle Crashers
-Brawl Stars
-Roblox
-Five Nigth's at Freddys
-Clash Royale
-Claso of Clans
-Terraria
+1, Rocket League, 4.3
+2, Fall Guys, 3.9
+3, Among Us, 4.1
+4, Left 4 Dead 2, 4.6
+5, Lethal Company, 4.4
+6, Party Animals, 3.8
+7, R.E.P.O., 3.5
+8, Human: Fall Flat, 4.0
+9, Peak, 3.2
+10, Ultimate Chicken Horse, 4.2
+11, Duck Game, 4.3
+12, Crab Game, 3.6
+13, Tricky Towers, 3.9
+14, Stick Fight: The Game, 4.0
+15, Pico Park, 4.1
+16, Muck, 3.7
+17, Project Zomboid, 4.5
+18, Half-Life, 4.7
+19, Deltarune, 4.5
+20, Hollow Knight: Silksong, 4.7
+21, Hollow Knight, 4.8
+22, Undertale, 4.8
+23, Plants vs. Zombies, 4.4
+24, Cuphead, 4.6
+25, Overcooked, 4.3
+26, Castle Crashers, 4.2
+27, Brawl Stars, 3.9
+28, Roblox, 3.8
+29, Five Nights at Freddy's, 4.0
+30, Clash Royale, 3.9
+31, Clash of Clans, 4.1
+32, Terraria, 4.7
