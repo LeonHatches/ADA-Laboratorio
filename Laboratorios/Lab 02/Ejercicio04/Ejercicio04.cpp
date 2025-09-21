@@ -14,6 +14,24 @@ struct Juego {
     }
 };
 
+Juego getGameFromLine(std::string linea) {
+    std::stringstream ss(linea);
+
+    std::string idStr, tituloStr, calificacionStr;
+
+    getline(ss, idStr, ',');
+    getline(ss, tituloStr, ',');
+    getline(ss, calificacionStr, ',');
+
+    int id = std::stoi(idStr);
+    double calificacion = std::stod(calificacionStr);
+    if (tituloStr[0] == ' ') {
+        tituloStr.erase(0, 1);
+    }
+
+    return {id, tituloStr, calificacion};
+}
+
 std::vector<Juego> cargarDatos() {
     std::ifstream fich("datos.txt");
 
@@ -26,23 +44,7 @@ std::vector<Juego> cargarDatos() {
     std::vector<Juego> datos;
 
     while (getline(fich, linea)) {
-        std::stringstream ss(linea);
-
-        std::string idStr, tituloStr, calificacionStr;
-
-        getline(ss, idStr, ',');
-        getline(ss, tituloStr, ',');
-        getline(ss, calificacionStr, ',');
-
-        int id = std::stoi(idStr);
-        double calificacion = std::stod(calificacionStr);
-        if (tituloStr[0] == ' ') {
-            tituloStr.erase(0, 1);
-        }
-
-        Juego juego{id, tituloStr, calificacion};
-
-        datos.push_back(juego);
+        datos.push_back(getGameFromLine(linea));
     }
 
     return datos;
