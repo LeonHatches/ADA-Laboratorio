@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <chrono>
 
 struct Juego {
     int id;
@@ -74,11 +75,16 @@ Juego getGameFromLine(std::string linea) {
     getline(ss, tituloStr, ',');
     getline(ss, calificacionStr, ',');
 
-    int id = std::stoi(idStr);
-    double calificacion = std::stod(calificacionStr);
     if (tituloStr[0] == ' ') {
         tituloStr.erase(0, 1);
     }
+
+    if (calificacionStr[0] == ' ') {
+        calificacionStr.erase(0, 1);
+    }
+
+    int id = std::stoi(idStr);
+    double calificacion = std::stod(calificacionStr);
 
     return {id, tituloStr, calificacion};
 }
@@ -115,15 +121,26 @@ int main() {
     std::vector<Juego> juegos = cargarDatos();
     std::vector<Juego> copia = juegos;
 
+
     // Ordernar con InsertionSort
     std::cout << "Ordenando arreglo con InsertionSort\n";
+    auto start1 = std::chrono::high_resolution_clock::now();
     insertionSort(juegos);
+    auto end1 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration1 = end1 - start1;
+    std::cout << "Tiempo de Ejecución: " << duration1.count() << '\n';
+
     guardarJuegos(juegos, "insertionSort.csv");
 
     std::cout << '\n';
 
     // Ordernar con SelectionSort
     std::cout << "Ordenando arreglo con SelectionSort\n";
+    auto start2 = std::chrono::high_resolution_clock::now();
     selectionSort(copia);
+    auto end2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration2 = end2 - start2;
+    std::cout << "Tiempo de Ejecución: " << duration2.count() << '\n';
+
     guardarJuegos(copia, "selectionSort.csv");
 }
