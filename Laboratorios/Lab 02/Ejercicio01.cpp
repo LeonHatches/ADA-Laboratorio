@@ -12,6 +12,9 @@ void insertion (vector <T>& arr) {
         
         T clave = arr[i];
 
+        pasos++;
+        cout<<pasos<<" "<<ends;
+
         for (j = i-1 ; j >= 0 && arr[j] > clave ; j--) {
             arr[j+1] = arr[j];
             pasos++;
