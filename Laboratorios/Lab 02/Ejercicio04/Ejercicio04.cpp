@@ -24,7 +24,7 @@ void insertionSort (std::vector <T>& arr) {
         
         T clave = arr[i];
 
-        for (j = i-1 ; j >= 0 && arr[j] > clave ; j--) {
+        for (j = i-1 ; j >= 0 && arr[j] < clave ; j--) {
             arr[j+1] = arr[j];
         }
         
@@ -34,15 +34,15 @@ void insertionSort (std::vector <T>& arr) {
 
 template <typename T>
 void selectionSort (std::vector <T>& arr) {
-    for (int min, i = 0 ; i < arr.size()-1 ; i++) {
+    for (int max, i = 0 ; i < arr.size()-1 ; i++) {
 
-        min = i;
-        for (int j = min+1 ; j < arr.size() ; j++) {
+        max = i;
+        for (int j = max+1 ; j < arr.size() ; j++) {
             
-            if (arr[j] < arr[min])
-                min = j;
+            if (arr[j] > arr[max])
+                max = j;
         }
-        std::swap(arr[i], arr[min]);
+        std::swap(arr[i], arr[max]);
     }
 }
 
