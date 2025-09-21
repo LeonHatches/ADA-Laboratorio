@@ -20,30 +20,49 @@ struct Juego {
 
 template <typename T>
 void insertionSort (std::vector <T>& arr) {
+    int comparaciones = 0;
+    int intercambios = 0;
+
     for (int j, i = 1 ; i < arr.size() ; i++) {
         
         T clave = arr[i];
 
-        for (j = i-1 ; j >= 0 && arr[j] < clave ; j--) {
-            arr[j+1] = arr[j];
+        for (j = i-1 ; j >= 0; j--) {
+            comparaciones++;
+            if (arr[j] < clave) {
+                arr[j+1] = arr[j];
+                intercambios++;
+            } else {
+                break;
+            }
         }
         
         arr[j+1] = clave;
     }
+
+    std::cout << "Comparaciones = " << comparaciones << "\tIntercambios = " << intercambios << '\n';
 }
 
 template <typename T>
 void selectionSort (std::vector <T>& arr) {
+    int comparaciones = 0;
+    int intercambios = 0;
+
     for (int max, i = 0 ; i < arr.size()-1 ; i++) {
 
         max = i;
         for (int j = max+1 ; j < arr.size() ; j++) {
-            
-            if (arr[j] > arr[max])
+            comparaciones++;
+
+            if (arr[j] > arr[max]) {
                 max = j;
+            }
         }
+        intercambios++;
         std::swap(arr[i], arr[max]);
     }
+
+    std::cout << "Comparaciones = " << comparaciones << "\tIntercambios = " << intercambios << '\n';
 }
 
 Juego getGameFromLine(std::string linea) {
@@ -97,10 +116,14 @@ int main() {
     std::vector<Juego> copia = juegos;
 
     // Ordernar con InsertionSort
+    std::cout << "Ordenando arreglo con InsertionSort\n";
     insertionSort(juegos);
     guardarJuegos(juegos, "insertionSort.csv");
 
+    std::cout << '\n';
+
     // Ordernar con SelectionSort
+    std::cout << "Ordenando arreglo con SelectionSort\n";
     selectionSort(copia);
     guardarJuegos(copia, "selectionSort.csv");
 }
