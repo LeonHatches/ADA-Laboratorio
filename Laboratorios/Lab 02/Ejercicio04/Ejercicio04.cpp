@@ -5,19 +5,32 @@
 #include <string>
 #include <chrono>
 
-struct Juego {
-    int id;
-    std::string titulo;
-    double calificacion;
+class Juego {
+    private:
+        int id;
+        std::string titulo;
+        double calificacion;
 
-    bool operator > (const Juego& juego) {
-        return (this-> calificacion > juego.calificacion);
-    }
+    public:
+        Juego(int id, std::string titulo, double calificacion) {
+            this->id = id;
+            this->calificacion = calificacion;
+            this->titulo = titulo;
+        }
 
-    bool operator < (const Juego& juego) {
-        return (this-> calificacion < juego.calificacion);
-    }
+        bool operator >(const Juego& juego) {
+            return (this-> calificacion > juego.calificacion);
+        }
+
+        bool operator <(const Juego& juego) {
+            return (this-> calificacion < juego.calificacion);
+        }
+
+        int getId() { return id; }
+        std::string getTitulo() { return titulo; }
+        double getCalificacion() { return calificacion; }
 };
+
 
 template <typename T>
 void insertionSort (std::vector <T>& arr) {
@@ -113,7 +126,7 @@ void guardarJuegos(std::vector<Juego> juegos, std::string nombreArchivo) {
     salida << "id,título,calificacion\n";
 
     for (Juego juego : juegos) {
-        salida << juego.id << ',' << juego.titulo << ',' << juego.calificacion << '\n';
+        salida << juego.getId() << ',' << juego.getTitulo() << ',' << juego.getCalificacion() << '\n';
     }
 }
 
