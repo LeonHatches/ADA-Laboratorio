@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 using namespace std;
 
 template <typename T>
@@ -28,6 +29,21 @@ int main () {
         
         vector <int> list2 = list1;
 
+        // Toma de tiempo y método DE INSERCIÓN
+        auto start1 = chrono::high_resolution_clock::now();
 
+        auto end1 = chrono::high_resolution_clock::now();
+
+        chrono::duration<double> duration1 = end1 - start1;
+
+        // Toma de tiempo y método DE SELECCIÓN
+        auto start2 = chrono::high_resolution_clock::now();
+
+        auto end2 = chrono::high_resolution_clock::now();
+
+        chrono::duration<double> duration2 = end2 - start2;
+
+        // Mostrar mensaje
+        cout<<"| Iteraciones de "<<cantidades[i]<<"| Ins: "<<duration1.count()<<" Sel: "<<duration2.count()<<endl;
     }
 }
