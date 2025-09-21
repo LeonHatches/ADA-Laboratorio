@@ -18,6 +18,20 @@ void insertionSort (std::vector <T>& arr) {
     }
 }
 
+template <typename T>
+void selectionSort (std::vector <T>& arr) {
+    for (int min, i = 0 ; i < arr.size()-1 ; i++) {
+
+        min = i;
+        for (int j = min+1 ; j < arr.size() ; j++) {
+            
+            if (arr[j] < arr[min])
+                min = j;
+        }
+        std::swap(arr[i], arr[min]);
+    }
+}
+
 struct Juego {
     int id;
     std::string titulo;
@@ -29,6 +43,10 @@ struct Juego {
 
     bool operator > (const Juego& juego) {
         return (this-> calificacion > juego.calificacion);
+    }
+
+    bool operator < (const Juego& juego) {
+        return (this-> calificacion < juego.calificacion);
     }
 };
 
@@ -76,6 +94,7 @@ void mostrarJuegos(std::vector<Juego> arr) {
 
 int main() {
     std::vector<Juego> juegos = cargarDatos();
-    insertionSort(juegos);
+    // insertionSort(juegos);
+    selectionSort(juegos);
     mostrarJuegos(juegos);
 }
