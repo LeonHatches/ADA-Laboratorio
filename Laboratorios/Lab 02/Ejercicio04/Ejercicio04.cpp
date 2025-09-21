@@ -4,13 +4,31 @@
 #include <sstream>
 #include <string>
 
+template <typename T>
+void insertionSort (std::vector <T>& arr) {
+    for (int j, i = 1 ; i < arr.size() ; i++) {
+        
+        T clave = arr[i];
+
+        for (j = i-1 ; j >= 0 && arr[j] > clave ; j--) {
+            arr[j+1] = arr[j];
+        }
+        
+        arr[j+1] = clave;
+    }
+}
+
 struct Juego {
     int id;
     std::string titulo;
-    double calificación;
+    double calificacion;
 
     void mostrarJuego() {
-        std::cout << "Id: " << id << ", Titulo: " << titulo << ", Calificacion: " << calificación << '\n';
+        std::cout << "Id: " << id << ", Titulo: " << titulo << ", Calificacion: " << calificacion << '\n';
+    }
+
+    bool operator > (const Juego& juego) {
+        return (this-> calificacion > juego.calificacion);
     }
 };
 
@@ -58,5 +76,6 @@ void mostrarJuegos(std::vector<Juego> arr) {
 
 int main() {
     std::vector<Juego> juegos = cargarDatos();
-        mostrarJuegos(juegos);
+    insertionSort(juegos);
+    mostrarJuegos(juegos);
 }
