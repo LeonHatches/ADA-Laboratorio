@@ -41,7 +41,7 @@ int main () {
 
     // LISTA AL REVÉS
     insertion(reves);
-    cout<<"Lista ordenada: "<<ends;
+    cout<<"Lista al revés: "<<ends;
     
     for (string nombre : reves)
         cout<<nombre<<" "<<ends;
@@ -50,7 +50,7 @@ int main () {
 
     // LISTA ALEATORIA
     insertion(aleat);
-    cout<<"Lista ordenada: "<<ends;
+    cout<<"Lista aleatoria: "<<ends;
     
     for (string nombre : aleat)
         cout<<nombre<<" "<<ends;
