@@ -44,7 +44,7 @@ void mergeSort(std::vector<T> &arr) {
 }
 
 template <typename T>
-void printVector(std::vector<T> &arr) {
+void printVector(std::vector<T> arr) {
     for (int i = 0; i < arr.size(); i++)
         std::cout << arr[i] << " ";
     std::cout << "\n";
