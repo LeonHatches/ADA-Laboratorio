@@ -76,6 +76,27 @@ void quickSort(std::vector<T>& arr) {
     quickSort(arr, 0, arr.size() - 1);
 }
 
+template <typename T>
+void insertionSort(std::vector<T> &arr) {
+    for (int j, i = 1 ; i < arr.size() ; i++) {
+        T clave = arr[i];
+        for (j = i-1 ; j >= 0 && arr[j] > clave ; j--)
+            arr[j+1] = arr[j];
+        arr[j+1] = clave;
+    }
+}
+
+template <typename T>
+void selectionSort(std::vector<T> &arr) {
+    for (int min, i = 0 ; i < arr.size()-1 ; i++) {
+        min = i;
+        for (int j = min+1 ; j < arr.size() ; j++) {
+            if (arr[j] < arr[min])
+                min = j;
+        }
+        std::swap(arr[i], arr[min]);
+    }
+}
 
 
 std::vector<int> generateArray(int n) {
@@ -96,7 +117,9 @@ void printVector(std::vector<int> &arr) {
 
 int main() {
     std::vector<int> arr = generateArray(10000);
-    std::vector<int> arrCopy = arr;
+    std::vector<int> arrCopy1 = arr;
+    std::vector<int> arrCopy2 = arr;
+    std::vector<int> arrCopy3 = arr;
 
     auto start1 = std::chrono::high_resolution_clock::now();
     mergeSort(arr);
@@ -105,8 +128,20 @@ int main() {
     std::cout << "Tiempo de Ejecución (MergeSort): " << duration1.count() << '\n';
 
     auto start2 = std::chrono::high_resolution_clock::now();
-    quickSort(arrCopy);
+    quickSort(arrCopy1);
     auto end2 = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> duration2 = end2 - start2;
     std::cout << "Tiempo de Ejecución (QuickSort): " << duration2.count() << '\n';
-}
+
+    auto start3 = std::chrono::high_resolution_clock::now();
+    insertionSort(arrCopy2);
+    auto end3 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration3 = end3 - start3;
+    std::cout << "Tiempo de Ejecución (InsertionSort): " << duration3.count() << '\n';
+
+    auto start4 = std::chrono::high_resolution_clock::now();
+    selectionSort(arrCopy3);
+    auto end4 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration4 = end4 - start4;
+    std::cout << "Tiempo de Ejecución (SelectionSort): " << duration4.count() << '\n';
+};
