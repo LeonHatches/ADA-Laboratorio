@@ -58,6 +58,14 @@ int binarySearch(std::vector<int> &arr, int target) {
     return -1;
 }
 
+int busquedaSecuencial(std::vector<int> &arr, int target) {
+    for (int i = 0; i < arr.size(); i++) {
+        if (arr[i] == target)
+            return i;
+    }
+    return -1;
+}
+
 template <typename T>
 void mergeSort(std::vector<T> &arr) {
     mergeSort(arr, 0, arr.size() - 1);
@@ -94,6 +102,8 @@ int main() {
     printVector(arr);
     std::cout << "\n";
 
-    int numIndex = binarySearch(arr, numeroBuscado);
-    std::cout << "Número " << numeroBuscado << " en índice: " << numIndex << "\n";
+    int numIndexBinary = binarySearch(arr, numeroBuscado);
+    int numIndexSecuencial = busquedaSecuencial(arr, numeroBuscado);
+    std::cout << "Índice de " << numeroBuscado << " con Búsqueda Binaria : " << numIndexBinary << "\n";
+    std::cout << "Índice de " << numeroBuscado << " con Búsqueda Secuencial : " << numIndexSecuencial << "\n";
 }
