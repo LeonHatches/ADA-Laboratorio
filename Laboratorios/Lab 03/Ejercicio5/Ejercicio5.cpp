@@ -1,6 +1,10 @@
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <chrono>
 using namespace std;
+
 
 class Producto {
     private:
@@ -32,7 +36,9 @@ class Producto {
         }
 };
 
+
 //---------------------- MERGESORT ---------------------- 
+
 template <typename T>
 void merge(vector<T> &arr, int l, int m, int r) {
     int n1 = m - l + 1;
@@ -75,6 +81,7 @@ void mergeSort(vector<T> &arr) {
     mergeSort(arr, 0, arr.size() - 1);
 }
 
+
 // -------------------- QUICKSORT -----------------------
 
 template <typename T>
@@ -109,6 +116,27 @@ void quickSort (vector <T>& arr) {
 // -----------------------------------------------------------
 
 
+Producto getProductoFromLine (string linea) {
+    
+}
 
+
+vector <Producto> cargarDatos () {
+    
+    ifstream fich("datos.txt");
+
+    if(!fich.is_open()) {
+        cout<<"Error al abrir los archivos."<<endl;
+        exit(EXIT_FAILURE);
+    }
+
+    string linea;
+    vector <Producto> datos;
+
+    while (getline(fich, linea))
+        datos.push_back(getProductoFromLine(linea));
+    
+    return datos;
+} 
 
 
