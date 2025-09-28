@@ -13,6 +13,8 @@ class Producto {
         double precio;
 
     public:
+        Producto() : id(0), nombre(""), precio(0.0) {}
+        
         Producto (int id, string nombre, double precio) {
             this->id = id;
             this->nombre = nombre;
@@ -136,7 +138,7 @@ Producto getProductoFromLine (string linea) {
     int id = stoi(idStr);
     double precio = stod(precioStr);
 
-    return {id, nombreStr, precio};
+    return Producto(id, nombreStr, precio);
 }
 
 
@@ -157,5 +159,41 @@ vector <Producto> cargarDatos () {
     
     return datos;
 } 
+
+void mostrarProducto(vector <Producto> productos) {
+    for (Producto producto : productos) {
+        cout<<producto.toStr()<<"  "<<endl;
+    }
+}
+
+int main () {
+    vector <Producto> productos = cargarDatos();
+    vector <Producto> copia     = productos;
+
+    // Ordernar con MergeSort
+    std::cout << "Ordenando arreglo con MergeSort\n";
+    auto start1 = std::chrono::high_resolution_clock::now();
+    mergeSort(productos);
+    auto end1 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration1 = end1 - start1;
+
+    mostrarProducto(productos);
+    std::cout << "\nTiempo de Ejecución: " << duration1.count() << '\n';
+
+
+    // Ordernar con QuickSort
+    std::cout << "Ordenando arreglo con QuickSort\n";
+    auto start2 = std::chrono::high_resolution_clock::now();
+    quickSort(copia);
+    auto end2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration2 = end2 - start2;
+
+    mostrarProducto(copia);
+    std::cout << "\nTiempo de Ejecución: " << duration2.count() << '\n';
+
+}
+
+
+
 
 
