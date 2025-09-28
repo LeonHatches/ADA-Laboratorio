@@ -117,7 +117,26 @@ void quickSort (vector <T>& arr) {
 
 
 Producto getProductoFromLine (string linea) {
+    stringstream ss(linea);
+
+    string idStr, nombreStr, precioStr;
+
+    getline(ss, idStr, ',');
+    getline(ss, nombreStr, ',');
+    getline(ss, precioStr, ',');
     
+    if (nombreStr[0] == ' ') {
+        nombreStr.erase(0, 1);
+    }
+
+    if (precioStr[0] == ' ') {
+        precioStr.erase(0, 1);
+    }
+
+    int id = stoi(idStr);
+    double precio = stod(precioStr);
+
+    return {id, nombreStr, precio};
 }
 
 
