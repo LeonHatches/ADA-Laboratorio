@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <chrono>
 
 template <typename T>
 void merge(std::vector<T> &arr, int l, int m, int r) {
@@ -40,6 +41,11 @@ void mergeSort(std::vector<T> &arr, int l, int r) {
     }
 }
 
+template <typename T>
+void mergeSort(std::vector<T> &arr) {
+    mergeSort(arr, 0, arr.size() - 1);
+}
+
 int binarySearch(std::vector<int> &arr, int target) {
     int start = 0, end = arr.size() - 1, med;
 
@@ -58,17 +64,18 @@ int binarySearch(std::vector<int> &arr, int target) {
     return -1;
 }
 
+int searchWithBinarySearch(std::vector<int> &arr, int target) {
+    std::vector<int> copy = arr;
+    mergeSort(copy);
+    return binarySearch(copy, target);
+}
+
 int busquedaSecuencial(std::vector<int> &arr, int target) {
     for (int i = 0; i < arr.size(); i++) {
         if (arr[i] == target)
             return i;
     }
     return -1;
-}
-
-template <typename T>
-void mergeSort(std::vector<T> &arr) {
-    mergeSort(arr, 0, arr.size() - 1);
 }
 
 std::vector<int> generateArray(int n) {
@@ -88,22 +95,27 @@ void printVector(std::vector<int> &arr) {
 }
 
 int main() {
-    std::vector<int> arr = generateArray(50);
+    std::vector<int> arr = generateArray(1000000);
     std::cout << "Arreglo Generado\n";
-    printVector(arr);
-    std::cout << "\n";
+    std::cout << "Tamaño: " << arr.size() << "\n";
 
     int numeroBuscado = arr[arr.size() / 2];
     std::cout << "Número a buscar: " << numeroBuscado << "\n";
     std::cout << "\n";
 
-    mergeSort(arr);
-    std::cout << "Arreglo Ordenado con MergeSort\n";
-    printVector(arr);
-    std::cout << "\n";
+    auto start1 = std::chrono::high_resolution_clock::now();
+    int numIndexBinary = searchWithBinarySearch(arr, numeroBuscado);
+    auto end1 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration1 = end1 - start1;
 
-    int numIndexBinary = binarySearch(arr, numeroBuscado);
+    std::cout << "Índice de " << numeroBuscado << " con Ordenamiento y Búsqueda Binaria : " << numIndexBinary << "\n";
+    std::cout << "Tiempo de Ejecución: " << duration1.count() << "\n\n";
+
+    auto start2 = std::chrono::high_resolution_clock::now();
     int numIndexSecuencial = busquedaSecuencial(arr, numeroBuscado);
-    std::cout << "Índice de " << numeroBuscado << " con Búsqueda Binaria : " << numIndexBinary << "\n";
+    auto end2 = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> duration2 = end2 - start2;
+
     std::cout << "Índice de " << numeroBuscado << " con Búsqueda Secuencial : " << numIndexSecuencial << "\n";
+    std::cout << "Tiempo de Ejecución: " << duration2.count() << '\n';
 }
