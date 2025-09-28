@@ -56,8 +56,16 @@ void quickSortRandom (vector <T>& arr, int low, int high) {
 }
 
 int main () {
-    vector <double> arr1 = {0.97, 0.57, 0.33, 0.31, 0.17, 0.14, 0.12, 0.10, 0.09, 0.01};
-    vector <double> arr2 = arr1;
+    const int N = 10000;
+    vector<double> arr1(N);
+    vector<double> arr2;
+
+    // Crear arreglo ordenado descendente
+    for (int i = 0; i < N; i++) {
+        arr1[i] = N - i;
+    }
+    arr2 = arr1;
+
 
     // Toma de tiempo y método de QUICKSORT FIJO
     auto start1 = chrono::high_resolution_clock::now();
@@ -66,12 +74,6 @@ int main () {
 
     chrono::duration<double> duration1 = end1 - start1;
 
-    cout<<"Arreglo Fijo: ";
-    for (double i : arr1) {
-        cout<<i<<" ";
-    }
-
-
     // Toma de tiempo y método de QUICKSORT ALEATORIO
     auto start2 = chrono::high_resolution_clock::now();
     quickSortRandom(arr2, 0, arr2.size() - 1);
@@ -79,10 +81,6 @@ int main () {
     
     chrono::duration<double> duration2 = end2 - start2;
 
-    cout<<"\nArreglo Aleatorio: ";
-    for (double j : arr2) {
-        cout<<j<<" ";
-    }
 
     // Mostrar mensaje
     cout<<"\n| Tiempo de Quicksort (s) | "<<"Fijo: "<<duration1.count()<<" Random: "<<duration2.count()<<endl;
