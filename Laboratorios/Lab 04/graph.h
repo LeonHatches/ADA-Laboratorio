@@ -68,6 +68,10 @@ class GraphLink {
     public:
         GraphLink() {}
 
+        const std::list<Vertex<T>*>& getListVertex () const {
+            return listVertex;
+        }
+
         Vertex<T>* searchVertex(T data) const {
             for (Vertex<T>* v : listVertex) {
                 if (v->getData() == data)
