@@ -8,17 +8,23 @@ template <typename T>
 GraphLink<T> kruskal (GraphLink<T>& G) {
     
     vector<Vertex<T>*> set;
-    for (auto v : G.listVertex) {
+    for (auto v : G.getListVertex()) {
         set.push_back(v);
     }
 
-    vector<Edge<T>*> Q;
+    vector<tuple<Vertex<T>*, Vertex<T>*, int>> Q;
     for (auto v : set) {
-        for (auto& e : v->getAdj()) {
-            Q.push_back(new Edge (v, e.getWeight(), e.getDest()));
+        for (const auto& e : v->getAdj()) {
+            Q.push_back({v, e.getDest(), e.getWeight()});
         }
     }
 
+    sort(Q.begin(), Q.end(),
+        [](const auto& a, const auto& b) {
+        return get<2>(a) < get<2>(b);
+    });
+
+    int n = set.size();
     GraphLink<T> tree;
 
     return G;
