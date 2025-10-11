@@ -59,4 +59,25 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
 }
 
 int main() {
+    
+    GraphLink<int> G;
+
+    G.insertVertex(1);
+    G.insertVertex(2);
+    G.insertVertex(3);
+    G.insertVertex(4);
+
+    G.insertEdge(1, 2, 3);
+    G.insertEdge(1, 3, 1);
+    G.insertEdge(2, 3, 7);
+    G.insertEdge(2, 4, 5);
+    G.insertEdge(3, 4, 2);
+
+    cout << "Grafo original:\n";
+    G.printGraph();
+
+    GraphLink<int> tree = prim(G, 1);
+
+    cout << "\nArbol de expansion minima (Prim):\n";
+    tree.printGraph();
 }
