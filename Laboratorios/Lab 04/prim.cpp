@@ -1,13 +1,30 @@
 #include <iostream>
 #include "graph.h"
-#include <vector>
-#include <algorithm>
+#include <limits>
+#include <queue>
+#include <map>
 
 using namespace std;
 
 template <typename T>
 GraphLink<T> prim (GraphLink<T>& G, T start) {
     
+    GraphLink<T> tree;
+    map<T, int>  distance;
+    map<T, T>    father;
+    map<T, bool> inQueue;
+
+    const int INFINITO = numeric_limits<int>::max();
+
+    for (auto v : G.getListVertex()) {
+        tree.insertVertex(v->getData());
+        
+        distance [v->getData()] = INFINITO;
+        father   [v->getData()] = T();
+        inQueue  [v->getData()] = true;
+    }
+
+    priority_queue<pair<int, T>, vector<pair<int, T>>, greater<pair<int, T>> queue;
 }
 
 int main () {
