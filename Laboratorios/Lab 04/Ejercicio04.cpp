@@ -1,6 +1,39 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+
+class DisjointSet {
+    private:
+        std::vector<int> parent;
+
+    public: 
+        DisjointSet(int size) {
+            parent.resize(size);
+            for (int i = 0; i < size; i++) {
+                parent[i] = i;
+            }
+        }
+
+        int find(int i) {
+            if (parent[i] == i) {
+                return i;
+            }
+
+            return find(parent[i]);
+        }
+
+        void unite(int i, int j) {
+            int irep = find(i);
+            int jrep = find(j);
+
+            parent[irep] = jrep;
+        }
+};
+
+
 
 template <typename T>
 class Graph {
@@ -12,7 +45,7 @@ class Graph {
 
     private:
         int searchVertexIndex(T value) {
-            for (int i = 0; i < vertices.size(); i++) {
+            for (size_t i = 0; i < vertices.size(); i++) {
                 if (vertices[i] == value)
                     return i;
             }
@@ -21,6 +54,7 @@ class Graph {
 
     public: 
         void addVertex(T value) {
+
             vertices.push_back(value);
             int n = vertices.size();
 
@@ -31,6 +65,11 @@ class Graph {
         }
 
         void addEdge(T vFrom, T vTo, int weight) {
+            if (weight <= 0) {
+                std::cout << "No se aceptan pesos negativos\n";
+                return;
+            }
+
             int vFromIndex = searchVertexIndex(vFrom);
             int vToIndex = searchVertexIndex(vTo);
 
@@ -46,16 +85,17 @@ class Graph {
         void printGraph() {
             if (vertices.size() == 0) {
                 std::cout << "No hay ninguna vértice incluida";
+                return;
             }
 
-            for (int i = 0; i < matriz.size(); i++) {
+            for (size_t i = 0; i < matriz.size(); i++) {
                 if (i == 0) {
                     std::cout << "\t";
                     for (auto value : vertices)
                         std::cout << value << "\t";
                     std::cout << "\n";
                 }
-                for (int j = 0; j < matriz[i].size(); j++) {
+                for (size_t j = 0; j < matriz[i].size(); j++) {
                     if (j == 0) {
                         std::cout << vertices[i] << "\t";
                     }
@@ -68,8 +108,79 @@ class Graph {
                 std::cout << "\n";
             }
         }
+
+        struct Edge {
+            int u, v, weight;
+
+            Edge(int u, int v, int weight) {
+                this->u = u;
+                this->v = v;
+                this->weight = weight;
+            }
+
+            bool operator<(const Edge& other) const {
+                return this->weight < other.weight;
+            }
+        };
+
+        void kruskal() {
+            std::vector<T> vertices = this->vertices;
+
+            std::vector<Edge> aristas;
+            int n = vertices.size();
+
+            for (int i = 0; i < n; i++) {
+                for (int j = i + 1; j < n; j++) {
+                    if (matriz[i][j] != INF) {
+                        aristas.push_back(Edge(i, j, matriz[i][j]));
+                    }
+                }
+            }
+
+            std::sort(aristas.begin(), aristas.end());
+
+            Graph<T> mst;
+            for (T vertice : vertices)
+                mst.addVertex(vertice);
+
+            DisjointSet dSet = DisjointSet(n);
+
+            int totalEdges = 0;
+            for (size_t i = 0; i < aristas.size() && totalEdges < (int)vertices.size() - 1; i++) {
+                if (dSet.find(aristas[i].u) != dSet.find(aristas[i].v)) {
+                    mst.addEdge(vertices[aristas[i].u], vertices[aristas[i].v], aristas[i].weight);
+                    dSet.unite(aristas[i].u, aristas[i].v);
+                }
+            }
+
+            mst.printGraph();
+        }
 };
 
 int main() {
     Graph<std::string> graph;
+
+    graph.addVertex("A");
+    graph.addVertex("B");
+    graph.addVertex("C");
+    graph.addVertex("D");
+    graph.addVertex("E");
+    graph.addVertex("F");
+    graph.addVertex("G");
+
+    graph.addEdge("A", "B", 10);
+    graph.addEdge("B", "D", 11);
+    graph.addEdge("C", "D", 12);
+    graph.addEdge("A", "C", 13);
+    graph.addEdge("B", "G", 14);
+    graph.addEdge("D", "G", 15);
+    graph.addEdge("D", "E", 16);
+    graph.addEdge("C", "E", 17);
+    graph.addEdge("E", "F", 18);
+    graph.addEdge("G", "F", 19);
+
+
+    graph.printGraph();
+    std::cout << "\n";
+    graph.kruskal();
 }
