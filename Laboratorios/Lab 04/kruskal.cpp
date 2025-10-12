@@ -16,7 +16,8 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
     vector<tuple<Vertex<T>*, Vertex<T>*, int>> Q;
     for (auto v : vertices) {
         for (const auto& e : v->getAdj()) {
-            Q.push_back({v, e.getDest(), e.getWeight()});
+            if (v->getData() < e.getDest()->getData())
+                Q.push_back({v, e.getDest(), e.getWeight()});
         }
     }
 
