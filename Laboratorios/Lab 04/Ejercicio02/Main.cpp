@@ -71,14 +71,14 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
 
             step++;
             saveDot(tree, "kruskalImages/step" + to_string(step) + ".dot",
-                {u->getData(), v->getData()}, cycleEdges, w);
+                {u->getData(), v->getData()}, cycleEdges, w, "Kruskal", step);
         
         } else {
 
             cycleEdges.push_back({u->getData(), v->getData(), w});
             step++;
             saveDot(tree, "kruskalImages/step" + to_string(step) + ".dot",
-                {-1,-1}, cycleEdges, -1);
+                {-1,-1}, cycleEdges, -1, "Kruskal", step);
         }
     }
     
@@ -147,7 +147,7 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
             tree.insertEdge(p.second, p.first, distance[p.first]);
             step++;
             saveDot(tree, "primImages/step" + to_string(step) + ".dot",
-                {p.second, p.first}, {}, distance[p.first]);
+                {p.second, p.first}, {}, distance[p.first], "Prim", step);
         }
 
     return tree;
@@ -170,15 +170,30 @@ template <typename T>
 void saveDot(GraphLink<T>& g, const string& filename,
     pair<T,T> newEdge = {-1, -1}, 
     const vector<tuple<T,T,int>>& cycleEdges = {},
-    int newEdgeWeight = -1) {
+    int newEdgeWeight = -1,
+    string algorithm = "",
+    int step = 0) {
     
     ofstream file(filename);
     file << "graph G {\n";
-    
+
+    // Título del grafo
+    if (!algorithm.empty() && step > 0) {
+        file << "  labelloc=\"t\";\n";
+        file << "  label=\"Algoritmo " << algorithm << ": Paso " << step << "\";\n";
+        file << "  fontsize=20;\n";
+        file << "  fontcolor=\"#333333\";\n";
+        file << "  fontname=\"Arial Bold\";\n";
+    }
+
+    // Configuración global
+    file << "  node [shape=circle, style=filled, penwidth=0, fontcolor=\"#FFFFFF\"];\n";
+    file << "  edge [penwidth=2];\n";
+
     // VÉRTICES
     for (auto v : g.getListVertex()) {
         file << "  " << v->getData()
-             << " [style = filled, fillcolor=lightblue];\n";
+             << " [style = filled, fillcolor=\"#c8310e\"];\n";
     }
 
     // ARISTAS
@@ -220,7 +235,7 @@ void saveDot(GraphLink<T>& g, const string& filename,
     file << "}\n";
     file.close();
     
-    string cmd = "dot -Tpng \"" + filename + "\" -o \"" + filename.substr(0, filename.size()-4) + ".png\"";
+    string cmd = "dot -Tpng -Gdpi=300 \"" + filename + "\" -o \"" + filename.substr(0, filename.size()-4) + ".png\"";
     system(cmd.c_str());
 }
 
