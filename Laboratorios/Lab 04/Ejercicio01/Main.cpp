@@ -5,6 +5,7 @@
 #include <limits>
 #include <queue>
 #include <map>
+#include <ctime>
 
 using namespace std;
 
@@ -12,6 +13,7 @@ using namespace std;
 
 template <typename T>
 GraphLink<T> kruskal (GraphLink<T>& G) {
+    int kruskalSteps = 0;
     
     vector<Vertex<T>*> vertices;
     for (auto v : G.getListVertex()) {
@@ -21,7 +23,8 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
     vector<tuple<Vertex<T>*, Vertex<T>*, int>> Q;
     for (auto v : vertices) {
         for (const auto& e : v->getAdj()) {
-            Q.push_back({v, e.getDest(), e.getWeight()});
+            if (v->getData() < e.getDest()->getData())
+                Q.push_back({v, e.getDest(), e.getWeight()});
         }
     }
 
@@ -50,6 +53,8 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
     }
 
     for (const auto& [u, v, w] : Q) {
+        kruskalSteps++;
+        
         int iU = findIndex(u);
         int iV = findIndex(v);
 
@@ -65,6 +70,7 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
         }
     }
     
+    cout << "Kruskal procesó " << kruskalSteps << " aristas.\n";
     return tree;
 }
 
@@ -76,6 +82,7 @@ using namespace std;
 template <typename T>
 GraphLink<T> prim (GraphLink<T>& G, T start) {
     
+    int primSteps = 0;
     GraphLink<T> tree;
     map<T, int>  distance;
     map<T, T>    father;
@@ -97,6 +104,7 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
     queue.push( {0, start} );
 
     while (!queue.empty()) {
+
         T u = queue.top().second;
         queue.pop();
 
@@ -107,6 +115,7 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
         if (!vertU) continue;
 
         for (const auto& e : vertU->getAdj()) {
+            primSteps++;
             T v = e.getDest()->getData();
             int peso = e.getWeight();
 
@@ -122,6 +131,7 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
         if (p.second != T())
             tree.insertEdge(p.second, p.first, distance[p.first]);
 
+    cout << "Prim procesó " << primSteps << " aristas.\n";
     return tree;
 }
 
@@ -132,6 +142,8 @@ int main () {
     const int ARISTAS  = 10;
     const int PESO_MAX = 20;
 
+    srand(time(0));
+
     GraphLink<int> grafo;
 
     for (int i = 1 ; i <= VERTICES ; i++) {
@@ -139,12 +151,32 @@ int main () {
     }
 
     for (int i = 0 ; i < ARISTAS ; i++) {
-        int from   = 1 + rand() % VERTICES;
-        int to     = 1 + rand() % VERTICES;
-        int weight = 1 + rand() % PESO_MAX;
+        int from, to, weight;
+        
+        do {
+            from = 1 + rand() % VERTICES;
+            to   = 1 + rand() % VERTICES;
+            
+        } while (from == to || grafo.getEdgeWeight(from, to) != -1);
+
+        if (grafo.getEdgeWeight(to, from) == -1)
+            weight = 1 + rand() % PESO_MAX;
+        else
+            weight = grafo.getEdgeWeight(to, from);
 
         grafo.insertEdge(from, to, weight);
     }
 
-    
+    cout << "Grafo original:\n";
+    grafo.printGraph();
+
+    cout << "\nÁrbol de expansión mínima (Kruskal):\n";
+    auto arbolK = kruskal(grafo);
+    arbolK.printGraph();
+
+    cout << "\nÁrbol de expansión mínima (Prim):\n";
+    auto arbolP = prim(grafo, 2);
+    arbolP.printGraph();
+
+    return 0;
 }
