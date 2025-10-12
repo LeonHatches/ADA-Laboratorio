@@ -43,12 +43,14 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
     }
 
     for (const auto& [u, v, w] : Q) {
+ 
         int iU = vertexIndex[u];
         int iV = vertexIndex[v];
 
         if(comp[iU] != comp[iV]) {
             tree.insertEdge(u->getData(), v->getData(), w);
-
+            tree.insertEdge(v->getData(), u->getData(), w);
+        
             int oldComp = comp[iV];
             int newComp = comp[iU];
 

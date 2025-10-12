@@ -12,8 +12,7 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
     GraphLink<T> tree;
     map<T, int>  distance;
     map<T, T>    father;
-    map<T, bool> inQueue;
-    map<T, bool> hasFather;
+    map<T, bool> visited;
 
 
     const int INFINITO = numeric_limits<int>::max();
@@ -23,21 +22,26 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
         
         distance [v->getData()] = INFINITO;
         father   [v->getData()] = T();
-        inQueue  [v->getData()] = true;
-        hasFather[v->getData()] = false;
+        visited  [v->getData()] = false;
     }
 
-    priority_queue<pair<int, T>, vector<pair<int, T>>, greater<pair<int, T>>> queue;
-
     distance[start] = 0;
+    priority_queue<pair<int, T>, vector<pair<int, T>>, greater<pair<int, T>>> queue;
     queue.push( {0, start} );
 
     while (!queue.empty()) {
+
+        int dist = queue.top().first;
         T u = queue.top().second;
         queue.pop();
 
-        if (!inQueue[u]) continue;
-        inQueue[u] = false;
+        if (visited[u]) continue;
+        visited[u] = true;
+
+        if (u != start) {
+            tree.insertEdge(father[u], u, distance[u]);
+            tree.insertEdge(u, father[u], distance[u]);
+        }
 
         Vertex<T>* vertU = G.searchVertex(u);
         if (!vertU) continue;
@@ -46,18 +50,13 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
             T v = e.getDest()->getData();
             int peso = e.getWeight();
 
-            if (inQueue[v] && peso < distance[v]) {
+            if (!visited[v] && peso < distance[v]) {
                 distance[v] = peso;
                 father[v]   = u;
-                hasFather[v] = true;
                 queue.push({distance[v], v});
             }
         }
     }
-
-    for (auto& p : father)
-        if (hasFather[p.first])
-            tree.insertEdge(p.second, p.first, distance[p.first]);
 
     return tree;
 }
