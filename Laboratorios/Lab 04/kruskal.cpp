@@ -2,7 +2,7 @@
 #include "graph.h"
 #include <vector>
 #include <algorithm>
-
+#include <map>
 using namespace std;
 
 template <typename T>
@@ -32,13 +32,10 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
         comp[i] = i;
     }
     
-    auto findIndex = [&](Vertex<T>* v) {
-        for (int i = 0; i < n ; ++i)
-            if (vertices[i] == v)
-                return i;
-        
-        return -1;
-    };
+    map<Vertex<T>*, int> vertexIndex;
+    for (int i = 0; i < n; ++i) {
+        vertexIndex[vertices[i]] = i;
+    }
 
     GraphLink<T> tree;
     for (auto v : G.getListVertex()) {
@@ -46,8 +43,8 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
     }
 
     for (const auto& [u, v, w] : Q) {
-        int iU = findIndex(u);
-        int iV = findIndex(v);
+        int iU = vertexIndex[u];
+        int iV = vertexIndex[v];
 
         if(comp[iU] != comp[iV]) {
             tree.insertEdge(u->getData(), v->getData(), w);

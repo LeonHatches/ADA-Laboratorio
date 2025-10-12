@@ -39,13 +39,10 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
         comp[i] = i;
     }
     
-    auto findIndex = [&](Vertex<T>* v) {
-        for (int i = 0; i < n ; ++i)
-            if (vertices[i] == v)
-                return i;
-        
-        return -1;
-    };
+    map<Vertex<T>*, int> vertexIndex;
+    for (int i = 0; i < n; ++i) {
+        vertexIndex[vertices[i]] = i;
+    }
 
     GraphLink<T> tree;
     for (auto v : G.getListVertex()) {
@@ -55,8 +52,8 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
     for (const auto& [u, v, w] : Q) {
         kruskalSteps++;
         
-        int iU = findIndex(u);
-        int iV = findIndex(v);
+        int iU = vertexIndex[u];
+        int iV = vertexIndex[v];
 
         if(comp[iU] != comp[iV]) {
             tree.insertEdge(u->getData(), v->getData(), w);
@@ -87,6 +84,8 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
     map<T, int>  distance;
     map<T, T>    father;
     map<T, bool> inQueue;
+    map<T, bool> hasFather;
+
 
     const int INFINITO = numeric_limits<int>::max();
 
@@ -96,6 +95,7 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
         distance [v->getData()] = INFINITO;
         father   [v->getData()] = T();
         inQueue  [v->getData()] = true;
+        hasFather[v->getData()] = false;
     }
 
     priority_queue<pair<int, T>, vector<pair<int, T>>, greater<pair<int, T>>> queue;
@@ -122,13 +122,14 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
             if (inQueue[v] && peso < distance[v]) {
                 distance[v] = peso;
                 father[v]   = u;
+                hasFather[v] = true;
                 queue.push({distance[v], v});
             }
         }
     }
 
     for (auto& p : father)
-        if (p.second != T())
+        if (hasFather[p.first])
             tree.insertEdge(p.second, p.first, distance[p.first]);
 
     cout << "Prim procesó " << primSteps << " aristas.\n";
