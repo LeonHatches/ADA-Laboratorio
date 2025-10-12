@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <queue>
 
 class DisjointSet {
     private:
@@ -155,6 +156,54 @@ class Graph {
 
             mst.printGraph();
         }
+
+        void prim() {
+            const int NUL = -1;
+            int size = vertices.size();
+
+            std::vector<int> parent(size, NUL);
+            std::vector<int> key(size, INF);
+            std::vector<bool> inMST(size, false);
+
+            key[0] = 0;
+            parent[0] = NUL;
+
+            for (int i = 0; i < size - 1; i++) {
+                int minKey = INF;
+                int u = NUL;
+
+                for (int j = 0; j < size; j++) {
+                    if (!inMST[i] && key[i] < minKey) {
+                        minKey = key[i];
+                        u = i;
+                    }
+                }
+
+                if (u == -1) 
+                    break;
+
+                inMST[u] = true;
+
+                for (int j = 0; j < size; j++) {
+                    if (matriz[u][j] != INF && !inMST[j] && matriz[u][j] < key[j]) {
+                        key[j] = matriz[u][j];
+                        parent[j] = u;
+                    }
+                }
+            }
+
+            Graph<T> mst;
+
+            for (T vertice : vertices)
+                mst.addVertex(vertice);
+
+            for (int i = 1; i < size; i++) {
+                if (parent[i] != NUL)
+                    mst.addEdge(vertices[parent[i]], vertices[i], matriz[parent[i]][i]);
+            }
+
+            mst.printGraph();
+        }
 };
 
 int main() {
@@ -179,8 +228,7 @@ int main() {
     graph.addEdge("E", "F", 18);
     graph.addEdge("G", "F", 19);
 
-
     graph.printGraph();
     std::cout << "\n";
-    graph.kruskal();
+    graph.prim();
 }
