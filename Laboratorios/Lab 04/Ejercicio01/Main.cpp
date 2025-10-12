@@ -128,5 +128,23 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
 // -------------- MAIN --------------
 
 int main () {
+    const int VERTICES = 6;
+    const int ARISTAS  = 10;
+    const int PESO_MAX = 20;
 
+    GraphLink<int> grafo;
+
+    for (int i = 1 ; i <= VERTICES ; i++) {
+        grafo.insertVertex(i);
+    }
+
+    for (int i = 0 ; i < ARISTAS ; i++) {
+        int from   = 1 + rand() % VERTICES;
+        int to     = 1 + rand() % VERTICES;
+        int weight = 1 + rand() % PESO_MAX;
+
+        grafo.insertEdge(from, to, weight);
+    }
+
+    
 }
