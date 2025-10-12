@@ -159,12 +159,10 @@ int main () {
             
         } while (from == to || grafo.getEdgeWeight(from, to) != -1);
 
-        if (grafo.getEdgeWeight(to, from) == -1)
-            weight = 1 + rand() % PESO_MAX;
-        else
-            weight = grafo.getEdgeWeight(to, from);
+        weight = 1 + rand() % PESO_MAX;
 
         grafo.insertEdge(from, to, weight);
+        grafo.insertEdge(to, from, weight);
     }
 
     cout << "Grafo original:\n";
