@@ -100,6 +100,18 @@ class GraphLink {
 
             std::cout << "Alguna vertice ingresada no existe\n";
         }
+
+        int getEdgeWeight(const T& from, const T& to) {
+            Vertex<T>* v = searchVertex(from);
+            if (!v) return -1;
+
+            for (const auto& e : v->getAdj()) {
+                if (e.getDest()->getData() == to)
+                    return e.getWeight();
+            }
+
+            return -1;
+        }
     
         void printGraph() {
             for (Vertex<T>* vertex : listVertex) {
