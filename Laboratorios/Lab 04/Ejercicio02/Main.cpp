@@ -6,7 +6,11 @@
 #include <queue>
 #include <map>
 #include <ctime>
+#include <filesystem>
+#include <fstream>
+#include <cstdlib>
 
+namespace fs = filesystem;
 using namespace std;
 
 // -------------- ALGORITMO KRUSKAL --------------
@@ -130,7 +134,16 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
 }
 // -------------- GRAPHVIZ --------------
 
-
+void clearFolder (const string& folder) {
+    
+    if (fs::exists(folder)) {
+        for (auto& f : fs::directory_iterator(folder))
+            fs::remove_all(f.path());
+    
+    } else {
+        fs::create_directory(folder);
+    }
+}
 
 
 
