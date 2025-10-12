@@ -41,13 +41,10 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
         comp[i] = i;
     }
     
-    auto findIndex = [&](Vertex<T>* v) {
-        for (int i = 0; i < n ; ++i)
-            if (vertices[i] == v)
-                return i;
-        
-        return -1;
-    };
+    map<Vertex<T>*, int> vertexIndex;
+    for (int i = 0; i < n; ++i) {
+        vertexIndex[vertices[i]] = i;
+    }
 
     GraphLink<T> tree;
     for (auto v : G.getListVertex()) {
@@ -55,10 +52,12 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
     }
 
     int step = 0;
+    vector<tuple<T, T, int>> cycleEdges;
+    
     for (const auto& [u, v, w] : Q) {
         
-        int iU = findIndex(u);
-        int iV = findIndex(v);
+        int iU = vertexIndex[u];
+        int iV = vertexIndex[v];
 
         if(comp[iU] != comp[iV]) {
             tree.insertEdge(u->getData(), v->getData(), w);
@@ -71,7 +70,15 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
                     c = newComp;
 
             step++;
-            saveDot(tree, "kruskalImages/step" + to_string(step) + ".dot");
+            saveDot(tree, "kruskalImages/step" + to_string(step) + ".dot",
+                {u->getData(), v->getData()}, cycleEdges, w);
+        
+        } else {
+
+            cycleEdges.push_back({u->getData(), v->getData(), w});
+            step++;
+            saveDot(tree, "kruskalImages/step" + to_string(step) + ".dot",
+                {-1,-1}, cycleEdges, -1);
         }
     }
     
@@ -90,6 +97,8 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
     map<T, int>  distance;
     map<T, T>    father;
     map<T, bool> inQueue;
+    map<T, bool> hasFather;
+
 
     const int INFINITO = numeric_limits<int>::max();
 
@@ -99,12 +108,15 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
         distance [v->getData()] = INFINITO;
         father   [v->getData()] = T();
         inQueue  [v->getData()] = true;
+        hasFather[v->getData()] = false;
     }
 
     priority_queue<pair<int, T>, vector<pair<int, T>>, greater<pair<int, T>>> queue;
 
     distance[start] = 0;
     queue.push( {0, start} );
+
+    int step = 0;
 
     while (!queue.empty()) {
 
@@ -124,17 +136,18 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
             if (inQueue[v] && peso < distance[v]) {
                 distance[v] = peso;
                 father[v]   = u;
+                hasFather[v] = true;
                 queue.push({distance[v], v});
             }
         }
     }
 
-    int step = 0;
     for (auto& p : father)
-        if (p.second != T()) {
+        if (hasFather[p.first]) {
             tree.insertEdge(p.second, p.first, distance[p.first]);
             step++;
-            saveDot(tree, "primImages/step" + to_string(step) + ".dot");
+            saveDot(tree, "primImages/step" + to_string(step) + ".dot",
+                {p.second, p.first}, {}, distance[p.first]);
         }
 
     return tree;
@@ -154,22 +167,60 @@ void clearFolder (const string& folder) {
 }
 
 template <typename T>
-void saveDot(GraphLink<T>& g, const string& filename) {
+void saveDot(GraphLink<T>& g, const string& filename,
+    pair<T,T> newEdge = {-1, -1}, 
+    const vector<tuple<T,T,int>>& cycleEdges = {},
+    int newEdgeWeight = -1) {
+    
     ofstream file(filename);
-
     file << "graph G {\n";
+    
+    // VÉRTICES
+    for (auto v : g.getListVertex()) {
+        file << "  " << v->getData()
+             << " [style = filled, fillcolor=lightblue];\n";
+    }
 
+    // ARISTAS
     for (auto v : g.getListVertex()) {
         for (auto& e : v->getAdj()) {
-            if (v->getData() < e.getDest()->getData())
-            file << "  " << v->getData() << " -- "
-                << e.getDest()->getData()
-                << " [label=\"" << e.getWeight() << "\"];\n";
+            T u = v->getData();
+            T w = e.getDest()->getData();
+
+            if (u < w) {
+                string color = "black";
+                string style = "";
+                
+                // Resaltar nueva arista agregada
+                if ((u == newEdge.first && w == newEdge.second) ||
+                    (u == newEdge.second && w == newEdge.first)) {
+                    color = "red";
+                    style = ", penwidth=2";
+                }
+                
+                file << "  " << u << " -- " << w
+                     << " [label=\"" << e.getWeight() 
+                     << "\", color=" << color << style << "];\n";
+            }
         }
     }
+
+    for (auto& ce : cycleEdges) {
+        T u = get<0>(ce);
+        T w = get<1>(ce);
+        int peso = get<2>(ce);
+        
+        if (u < w) {
+            file << "  " << u << " -- " << w 
+                 << " [label=\"" << peso
+                 << "\", color=gray, style=dashed];\n";
+        }
+    }
+
     file << "}\n";
     file.close();
-    string cmd = "dot -Tpng " + filename + " -o " + filename.substr(0, filename.size()-4) + ".png";
+    
+    string cmd = "dot -Tpng \"" + filename + "\" -o \"" + filename.substr(0, filename.size()-4) + ".png\"";
     system(cmd.c_str());
 }
 
