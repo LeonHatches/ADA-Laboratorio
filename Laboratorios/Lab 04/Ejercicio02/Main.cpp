@@ -9,9 +9,8 @@
 #include <filesystem>
 #include <fstream>
 #include <cstdlib>
-
-namespace fs = filesystem;
 using namespace std;
+namespace fs = filesystem;
 
 // -------------- ALGORITMO KRUSKAL --------------
 
@@ -55,6 +54,7 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
         tree.insertVertex(v->getData());
     }
 
+    int step = 0;
     for (const auto& [u, v, w] : Q) {
         
         int iU = findIndex(u);
@@ -69,6 +69,9 @@ GraphLink<T> kruskal (GraphLink<T>& G) {
             for(auto& c : comp)
                 if(c == oldComp)
                     c = newComp;
+
+            step++;
+            saveDot(tree, "kruskalImages/step" + to_string(step) + ".dot");
         }
     }
     
@@ -126,13 +129,18 @@ GraphLink<T> prim (GraphLink<T>& G, T start) {
         }
     }
 
+    int step = 0;
     for (auto& p : father)
-        if (p.second != T())
+        if (p.second != T()) {
             tree.insertEdge(p.second, p.first, distance[p.first]);
+            step++;
+            saveDot(tree, "primImages/step" + to_string(step) + ".dot");
+        }
 
     return tree;
 }
 // -------------- GRAPHVIZ --------------
+
 
 void clearFolder (const string& folder) {
     
@@ -145,11 +153,33 @@ void clearFolder (const string& folder) {
     }
 }
 
+template <typename T>
+void saveDot(GraphLink<T>& g, const string& filename) {
+    ofstream file(filename);
+
+    file << "graph G {\n";
+
+    for (auto v : g.getListVertex()) {
+        for (auto& e : v->getAdj()) {
+            if (v->getData() < e.getDest()->getData())
+            file << "  " << v->getData() << " -- "
+                << e.getDest()->getData()
+                << " [label=\"" << e.getWeight() << "\"];\n";
+        }
+    }
+    file << "}\n";
+    file.close();
+    string cmd = "dot -Tpng " + filename + " -o " + filename.substr(0, filename.size()-4) + ".png";
+    system(cmd.c_str());
+}
 
 
 // -------------- MAIN --------------
 
 int main () {
+    clearFolder("kruskalImages");
+    clearFolder("primImages");
+
     const int VERTICES = 6;
     const int ARISTAS  = 10;
     const int PESO_MAX = 20;
@@ -179,14 +209,8 @@ int main () {
 
     cout << "Grafo original:\n";
     grafo.printGraph();
-
-    cout << "\nÁrbol de expansión mínima (Kruskal):\n";
-    auto arbolK = kruskal(grafo);
-    arbolK.printGraph();
-
-    cout << "\nÁrbol de expansión mínima (Prim):\n";
-    auto arbolP = prim(grafo, 2);
-    arbolP.printGraph();
+    kruskal(grafo);
+    prim(grafo, 1);
 
     return 0;
 }
