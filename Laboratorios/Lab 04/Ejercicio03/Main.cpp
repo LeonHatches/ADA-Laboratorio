@@ -316,8 +316,4 @@ int main() {
     }
 
     return 0;
-}n diferentes costos\n";
-    }
-
-    return 0;
 }
