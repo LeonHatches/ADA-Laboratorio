@@ -10,26 +10,11 @@
 using namespace std;
 using namespace std::chrono;
 
-template <typename T>
-class Edge;
+template <typename T> class Vertex;
+template <typename T> class Edge;
+template <typename T> class GraphLink;
 
-template <typename T>
-class Vertex {
-private:
-    T data;
-    list<Edge<T>> adj;
-public:
-    Vertex(T d) : data(d) {}
-    
-    T getData() const { return data; }
-    list<Edge<T>>& getAdj() { return adj; }
-    const list<Edge<T>>& getAdj() const { return adj; }
-    
-    void addEdge(Vertex<T>* dest, int weight) {
-        adj.push_back(Edge<T>(this, dest, weight));
-    }
-};
-
+// Clase Edge
 template <typename T>
 class Edge {
 private:
@@ -44,6 +29,25 @@ public:
     int getWeight() const { return weight; }
 };
 
+// Clase Vertex
+template <typename T>
+class Vertex {
+private:
+    T data;
+    list<Edge<T>> adj;
+public:
+    Vertex(T d) : data(d) {}
+    
+    T getData() const { return data; }
+    list<Edge<T>>& getAdj() { return adj; }
+    const list<Edge<T>>& getAdj() const { return adj; } 
+    
+    void addEdge(Vertex<T>* dest, int weight) {
+        adj.push_back(Edge<T>(this, dest, weight));
+    }
+};
+
+// Clase GraphLink
 template <typename T>
 class GraphLink {
 private:
@@ -89,11 +93,11 @@ public:
     }
 };
 
-// Estructura para Union-Find (kruskal)
+// Estructura para Union-Find (usado en Kruskal)
 template <typename T>
 class UnionFind {
 private:
-    map<Vertex<T>*, Vertex<T>*> parent;
+    map<Vertex<T>, Vertex<T>> parent;
     map<Vertex<T>*, int> rank;
 public:
     void makeSet(Vertex<T>* v) {
@@ -129,36 +133,40 @@ template <typename T>
 GraphLink<T> kruskal(GraphLink<T>& G) {
     GraphLink<T> mst;
     UnionFind<T> uf;
-    vector<pair<int, pair<Vertex<T>*, Vertex<T>*>>> edges;
+    vector<pair<int, pair<Vertex<T>, Vertex<T>>>> edges;
     
-    // Crear vértices en el MST
+    // Crear vértices en el MST (copia solo los datos, no los objetos Vertex originales)
     for (auto v : G.getListVertex()) {
         mst.insertVertex(v->getData());
-        uf.makeSet(v);
+        uf.makeSet(v); 
     }
     
-    // Recoger todas las aristas
+    // Recoger todas las aristas 
     for (auto v : G.getListVertex()) {
         for (const auto& e : v->getAdj()) {
-            if (v->getData() < e.getDest()->getData()) { // Evitar duplicados
+            // Asegurarse de agregar cada arista solo una vez en el caso no dirigido
+            if (v->getData() < e.getDest()->getData()) { 
                 edges.push_back({e.getWeight(), {v, e.getDest()}});
             }
         }
     }
     
-    // Ordenar aristas por peso
+    // Ordenar aristas por peso de forma ascendente
     sort(edges.begin(), edges.end(), 
          [](const auto& a, const auto& b) { return a.first < b.first; });
     
     // Construir MST
     for (const auto& edge : edges) {
         int weight = edge.first;
-        Vertex<T>* u = edge.second.first;
-        Vertex<T>* v = edge.second.second;
+        Vertex<T>* u_original = edge.second.first;
+        Vertex<T>* v_original = edge.second.second;
         
-        if (uf.find(u) != uf.find(v)) {
-            mst.insertEdge(u->getData(), v->getData(), weight);
-            uf.unionSets(u, v);
+        // si los vértices no estan ya en la misma componente
+        if (uf.find(u_original) != uf.find(v_original)) {
+            // agrega la arista al MST
+            mst.insertEdge(u_original->getData(), v_original->getData(), weight);
+            // unir
+            uf.unionSets(u_original, v_original);
         }
     }
     
@@ -173,28 +181,27 @@ GraphLink<T> prim(GraphLink<T>& G, T start) {
     
     if (vertices.empty()) return mst;
     
-    // Crear vértices en el MST
+    // Crear vértices en el MST (copiar solo los datos)
     for (auto v : vertices) {
         mst.insertVertex(v->getData());
     }
     
     map<Vertex<T>*, bool> inMST;
-    map<Vertex<T>*, int> key;
-    map<Vertex<T>*, Vertex<T>*> parent;
+    map<Vertex<T>*, int> key;    
+    map<Vertex<T>, Vertex<T>> parent; 
     
     for (auto v : vertices) {
         inMST[v] = false;
         key[v] = INT_MAX;
+        parent[v] = nullptr;
     }
     
     Vertex<T>* startVertex = G.findVertex(start);
     if (!startVertex) return mst;
     
-    key[startVertex] = 0;
-    parent[startVertex] = nullptr;
-    
+    key[startVertex] = 0; 
+
     for (int i = 0; i < vertices.size(); i++) {
-        // Encontrar vértice con key mínimo
         Vertex<T>* u = nullptr;
         int minKey = INT_MAX;
         
@@ -209,26 +216,17 @@ GraphLink<T> prim(GraphLink<T>& G, T start) {
         
         inMST[u] = true;
         
-        // Agregar arista al MST
         if (parent[u] != nullptr) {
-            // Encontrar el peso de la arista
-            int weight = 0;
-            for (const auto& e : parent[u]->getAdj()) {
-                if (e.getDest() == u) {
-                    weight = e.getWeight();
-                    break;
-                }
-            }
-            mst.insertEdge(parent[u]->getData(), u->getData(), weight);
+            mst.insertEdge(parent[u]->getData(), u->getData(), key[u]);
         }
         
-        // Actualizar keys de vértices adyacentes
         for (const auto& e : u->getAdj()) {
             Vertex<T>* v = e.getDest();
             int weight = e.getWeight();
+            
             if (!inMST[v] && weight < key[v]) {
-                parent[v] = u;
-                key[v] = weight;
+                parent[v] = u;    
+                key[v] = weight;  /
             }
         }
     }
@@ -239,23 +237,23 @@ GraphLink<T> prim(GraphLink<T>& G, T start) {
 // Función para crear un grafo aleatorio conexo
 GraphLink<int> generarGrafoAleatorio(int numVertices) {
     GraphLink<int> G;
-    srand(time(nullptr));
 
     // Crear los vértices
     for (int i = 1; i <= numVertices; i++)
         G.insertVertex(i);
 
-    // Agregar aristas aleatorias para asegurar conexidad
+    // Agregar aristas para asegurar la conexidad inicial
     for (int i = 1; i < numVertices; i++) {
-        int peso = rand() % 20 + 1;
+        int peso = rand() % 20 + 1; // Pesos entre 1 y 20
         G.insertEdge(i, i + 1, peso);
     }
 
-    // Agregar más aristas aleatorias para densidad
-    int aristasExtras = numVertices * 2;
+    // Agregar más aristas aleatorias para aumentar la densidad del grafo
+    int aristasExtras = numVertices;
     for (int i = 0; i < aristasExtras; i++) {
         int a = rand() % numVertices + 1;
         int b = rand() % numVertices + 1;
+        // evitar autobucles y aristas existentes
         if (a != b) {
             int peso = rand() % 20 + 1;
             G.insertEdge(a, b, peso);
@@ -265,13 +263,14 @@ GraphLink<int> generarGrafoAleatorio(int numVertices) {
     return G;
 }
 
-// Función para calcular el peso total de un MST
+// Funcion para calcular el peso total de un MST
 template <typename T>
 int calcularPeso(GraphLink<T>& G) {
     int total = 0;
     for (auto v : G.getListVertex()) {
         for (const auto& e : v->getAdj()) {
-            if (v->getData() < e.getDest()->getData()) // Evitar contar duplicados
+            // sumar el peso de cada arista una sola vez
+            if (v->getData() < e.getDest()->getData()) 
                 total += e.getWeight();
         }
     }
@@ -279,7 +278,9 @@ int calcularPeso(GraphLink<T>& G) {
 }
 
 int main() {
-    vector<int> tamanos = {10, 50, 100};
+    srand(time(nullptr));
+
+    vector<int> tamanos = {10, 50, 100}; 
 
     for (int n : tamanos) {
         cout << "\nGRAFO CON " << n << " VERTICES\n";
@@ -295,7 +296,7 @@ int main() {
 
         // Medir tiempo de Prim
         auto inicioP = high_resolution_clock::now();
-        GraphLink<int> mstP = prim(G, 1);
+        GraphLink<int> mstP = prim(G, 1); // Asumimos que el vértice 1 siempre existe
         auto finP = high_resolution_clock::now();
         auto tiempoP = duration_cast<milliseconds>(finP - inicioP).count();
 
@@ -311,7 +312,11 @@ int main() {
         if (pesoK == pesoP)
             cout << "Ambos algoritmos producen el mismo costo total\n";
         else
-            cout << "Los algoritmos generaron MST con diferentes costos\n";
+            cout << "ERROR: Los algoritmos generaron MST con diferentes costos!\n";
+    }
+
+    return 0;
+}n diferentes costos\n";
     }
 
     return 0;
