@@ -277,3 +277,42 @@ int calcularPeso(GraphLink<T>& G) {
     }
     return total;
 }
+
+int main() {
+    vector<int> tamanos = {10, 50, 100};
+
+    for (int n : tamanos) {
+        cout << "\nGRAFO CON " << n << " VERTICES\n";
+        cout << "=====================\n";
+
+        GraphLink<int> G = generarGrafoAleatorio(n);
+
+        // Medir tiempo de Kruskal
+        auto inicioK = high_resolution_clock::now();
+        GraphLink<int> mstK = kruskal(G);
+        auto finK = high_resolution_clock::now();
+        auto tiempoK = duration_cast<milliseconds>(finK - inicioK).count();
+
+        // Medir tiempo de Prim
+        auto inicioP = high_resolution_clock::now();
+        GraphLink<int> mstP = prim(G, 1);
+        auto finP = high_resolution_clock::now();
+        auto tiempoP = duration_cast<milliseconds>(finP - inicioP).count();
+
+        // Calcular pesos totales
+        int pesoK = calcularPeso(mstK);
+        int pesoP = calcularPeso(mstP);
+
+        cout << "Tiempo Kruskal: " << tiempoK << " ms\n";
+        cout << "Tiempo Prim: " << tiempoP << " ms\n";
+        cout << "Peso total Kruskal: " << pesoK << "\n";
+        cout << "Peso total Prim: " << pesoP << "\n";
+
+        if (pesoK == pesoP)
+            cout << "Ambos algoritmos producen el mismo costo total\n";
+        else
+            cout << "Los algoritmos generaron MST con diferentes costos\n";
+    }
+
+    return 0;
+}
