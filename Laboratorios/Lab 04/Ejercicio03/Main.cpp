@@ -62,3 +62,32 @@ public:
         return vertices;
     }
 };
+
+// Función para crear un grafo aleatorio conexo
+GraphLink<int> generarGrafoAleatorio(int numVertices) {
+    GraphLink<int> G;
+    srand(time(nullptr));
+
+    // Crear los vértices
+    for (int i = 1; i <= numVertices; i++)
+        G.insertVertex(i);
+
+    // Agregar aristas aleatorias para asegurar conexidad
+    for (int i = 1; i < numVertices; i++) {
+        int peso = rand() % 20 + 1;
+        G.insertEdge(i, i + 1, peso);
+    }
+
+    // Agregar más aristas aleatorias para densidad
+    int aristasExtras = numVertices * 2;
+    for (int i = 0; i < aristasExtras; i++) {
+        int a = rand() % numVertices + 1;
+        int b = rand() % numVertices + 1;
+        if (a != b) {
+            int peso = rand() % 20 + 1;
+            G.insertEdge(a, b, peso);
+        }
+    }
+
+    return G;
+}
