@@ -4,6 +4,7 @@
 *.dll
 *.obj
 *.o
+*.out
 *.a
 *.lib
 *.out
