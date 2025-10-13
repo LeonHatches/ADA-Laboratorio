@@ -7,6 +7,7 @@
 #include <queue>
 #include <map>
 #include <ctime>
+#include <chrono>
 
 using namespace std;
 
@@ -153,25 +154,44 @@ int main() {
     }
 
     std::cout << "Grafo con Listas de Adyacencia\n";
+
+
     graphLink.printGraph();
 
     std::cout << "\n";
 
     std::cout << "Grafo con Matriz de Adyacencia\n";
-    matrixGraph.printGraph();
 
     std::cout << "\nKRUSKAL\n";
+
+    auto inicio = std::chrono::high_resolution_clock::now();
     kruskal(graphLink).printGraph();
+    auto fin = std::chrono::high_resolution_clock::now();
+    auto duracion = std::chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
+    std::cout << "Tiempo: " << duracion.count() << " microsegundos" << std::endl;
+   
 
     std::cout << "\n";
 
+    inicio = std::chrono::high_resolution_clock::now();
     matrixGraph.kruskal();
+    fin = std::chrono::high_resolution_clock::now();
+    duracion = std::chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
+    std::cout << "Tiempo: " << duracion.count() << " microsegundos" << std::endl;
 
 
     std::cout << "\nPRIM\n";
+    inicio = std::chrono::high_resolution_clock::now();
     prim(graphLink, 0).printGraph();
+    fin = std::chrono::high_resolution_clock::now();
+    duracion = std::chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
+    std::cout << "Tiempo: " << duracion.count() << " microsegundos" << std::endl;
 
     std::cout << "\n";
 
+    inicio = std::chrono::high_resolution_clock::now();
     matrixGraph.printGraph();
+    fin = std::chrono::high_resolution_clock::now();
+    duracion = std::chrono::duration_cast<std::chrono::microseconds>(fin - inicio);
+    std::cout << "Tiempo: " << duracion.count() << " microsegundos" << std::endl;
 }
