@@ -238,3 +238,158 @@ GraphLink<T> prim(GraphLink<T>& G, T inicio) {
     
     return mst;
 }
+
+// Funcion para obtener aristas únicas (evita duplicados)
+template <typename T>
+vector<tuple<T, T, int>> obtenerAristasUnicas(GraphLink<T>& G) {
+    vector<tuple<T, T, int>> lista;
+    for (auto v : G.getListVertex()) {
+        T a = v->getData();
+        for (const auto& e : v->getAdj()) {
+            T b = e.getDest()->getData();
+            int w = e.getWeight();
+            if (a < b) lista.push_back({a, b, w});
+        }
+    }
+    sort(lista.begin(), lista.end(),
+         [](const auto& x, const auto& y){
+             if (get<0>(x) != get<0>(y)) return get<0>(x) < get<0>(y);
+             if (get<1>(x) != get<1>(y)) return get<1>(x) < get<1>(y);
+             return get<2>(x) < get<2>(y);
+         });
+    return lista;
+}
+
+// Calcula el peso total de las aristas del grafo
+template <typename T>
+int pesoTotal(GraphLink<T>& G) {
+    int total = 0;
+    for (auto v : G.getListVertex()) {
+        T a = v->getData();
+        for (const auto& e : v->getAdj()) {
+            T b = e.getDest()->getData();
+            int w = e.getWeight();
+            if (a < b) total += w;
+        }
+    }
+    return total;
+}
+
+// Compara si dos listas de aristas son idénticas
+template <typename T>
+bool mismasAristas(const vector<tuple<T,T,int>>& a, const vector<tuple<T,T,int>>& b) {
+    return a == b;
+}
+
+// Imprime las aristas del grafo
+template <typename T>
+void imprimirAristas(const vector<tuple<T,T,int>>& lista) {
+    for (const auto& t : lista)
+        cout << "  " << get<0>(t) << " - " << get<1>(t) << "  (peso = " << get<2>(t) << ")\n";
+}
+
+// Ejemplo 1: Red de transporte urbano
+GraphLink<string> crearRedTransporte() {
+    GraphLink<string> R;
+    vector<string> estaciones = {"Central","Avenida","Parque","Universidad","Museo","Terminal"};
+    for (auto& s : estaciones) R.insertVertex(s);
+
+    R.insertEdge("Central", "Avenida", 5);
+    R.insertEdge("Central", "Parque", 7);
+    R.insertEdge("Avenida", "Parque", 3);
+    R.insertEdge("Avenida", "Universidad", 10);
+    R.insertEdge("Parque", "Universidad", 4);
+    R.insertEdge("Parque", "Museo", 8);
+    R.insertEdge("Universidad", "Museo", 6);
+    R.insertEdge("Museo", "Terminal", 9);
+    R.insertEdge("Universidad", "Terminal", 12);
+    R.insertEdge("Avenida", "Terminal", 14);
+
+    return R;
+}
+
+// Ejemplo 2: Red de fibra optica
+GraphLink<int> crearRedFibra() {
+    GraphLink<int> F;
+    for (int i = 1; i <= 8; ++i) F.insertVertex(i);
+
+    F.insertEdge(1, 2, 10);
+    F.insertEdge(1, 3, 12);
+    F.insertEdge(2, 3, 8);
+    F.insertEdge(2, 4, 20);
+    F.insertEdge(3, 5, 15);
+    F.insertEdge(4, 5, 7);
+    F.insertEdge(4, 6, 30);
+    F.insertEdge(5, 6, 10);
+    F.insertEdge(5, 7, 6);
+    F.insertEdge(6, 8, 25);
+    F.insertEdge(7, 8, 12);
+    F.insertEdge(3, 7, 18);
+
+    return F;
+}
+
+// Funcion para aplicar y comparar los algoritmos
+template <typename T>
+void aplicarYCompararMST(GraphLink<T>& red, T inicio, const string& nombreRed) {
+    cout << "\n" << string(50, '=') << "\n";
+    cout << "RED: " << nombreRed << "\n";
+    
+    cout << "Grafo original:\n";
+    red.printGraph();
+
+    auto t0 = high_resolution_clock::now();
+    GraphLink<T> mstK = kruskal(red);
+    auto t1 = high_resolution_clock::now();
+    double msK = duration_cast<microseconds>(t1 - t0).count() / 1000.0;
+
+    auto t2 = high_resolution_clock::now();
+    GraphLink<T> mstP = prim(red, inicio);
+    auto t3 = high_resolution_clock::now();
+    double msP = duration_cast<microseconds>(t3 - t2).count() / 1000.0;
+
+    auto aristasK = obtenerAristasUnicas(mstK);
+    auto aristasP = obtenerAristasUnicas(mstP);
+    int pesoK = pesoTotal(mstK);
+    int pesoP = pesoTotal(mstP);
+
+    cout << fixed << setprecision(3);
+    cout << "\n ALGORITMO KRUSKAL \n";
+    cout << "Tiempo de ejecucion: " << msK << " ms\n";
+    cout << "Peso total del MST: " << pesoK << "\n";
+    cout << "Aristas del MST:\n"; 
+    imprimirAristas(aristasK);
+
+    cout << "\n ALGORITMO PRIM (inicio: " << inicio << ") \n";
+    cout << "Tiempo de ejecucion: " << msP << " ms\n";
+    cout << "Peso total del MST: " << pesoP << "\n";
+    cout << "Aristas del MST:\n"; 
+    imprimirAristas(aristasP);
+
+    cout << "\n COMPARACION \n";
+    if (pesoK == pesoP)
+        cout << "Ambos algoritmos obtuvieron el mismo peso total: " << pesoK << "\n";
+    else
+        cout << "Los algoritmos obtuvieron pesos diferentes (Kruskal: " << pesoK << ", Prim: " << pesoP << ")\n";
+
+    if (mismasAristas(aristasK, aristasP))
+        cout << "Ambos MST contienen exactamente las mismas aristas.\n";
+    else
+        cout << "Los MST difieren en el conjunto de aristas.\n";
+
+}
+
+int main() {
+    cout << "COMPARACION DE ALGORITMOS KRUSKAL Y PRIM\n";
+
+    // Red de transporte urbano
+    auto redTransporte = crearRedTransporte();
+    aplicarYCompararMST<string>(redTransporte, "Central", "RED DE TRANSPORTE URBANO");
+
+    // Red de fibra óptica
+    auto redFibra = crearRedFibra();
+    aplicarYCompararMST<int>(redFibra, 1, "RED DE FIBRA OPTICA");
+
+    cout << "\nFin de la comparacion.\n";
+    return 0;
+}
