@@ -206,29 +206,29 @@ class MatrixGraph {
         }
 };
 
-int main() {
-    MatrixGraph<std::string> graph;
+// int main() {
+//     MatrixGraph<std::string> graph;
 
-    graph.addVertex("A");
-    graph.addVertex("B");
-    graph.addVertex("C");
-    graph.addVertex("D");
-    graph.addVertex("E");
-    graph.addVertex("F");
-    graph.addVertex("G");
+//     graph.addVertex("A");
+//     graph.addVertex("B");
+//     graph.addVertex("C");
+//     graph.addVertex("D");
+//     graph.addVertex("E");
+//     graph.addVertex("F");
+//     graph.addVertex("G");
 
-    graph.addEdge("A", "B", 10);
-    graph.addEdge("B", "D", 11);
-    graph.addEdge("C", "D", 12);
-    graph.addEdge("A", "C", 13);
-    graph.addEdge("B", "G", 14);
-    graph.addEdge("D", "G", 15);
-    graph.addEdge("D", "E", 16);
-    graph.addEdge("C", "E", 17);
-    graph.addEdge("E", "F", 18);
-    graph.addEdge("G", "F", 19);
+//     graph.addEdge("A", "B", 10);
+//     graph.addEdge("B", "D", 11);
+//     graph.addEdge("C", "D", 12);
+//     graph.addEdge("A", "C", 13);
+//     graph.addEdge("B", "G", 14);
+//     graph.addEdge("D", "G", 15);
+//     graph.addEdge("D", "E", 16);
+//     graph.addEdge("C", "E", 17);
+//     graph.addEdge("E", "F", 18);
+//     graph.addEdge("G", "F", 19);
 
-    graph.printGraph();
-    std::cout << "\n";
-    graph.prim();
-}
+//     graph.printGraph();
+//     std::cout << "\n";
+//     graph.prim();
+// }
