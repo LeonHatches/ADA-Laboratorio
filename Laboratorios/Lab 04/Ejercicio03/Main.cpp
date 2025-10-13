@@ -264,3 +264,16 @@ GraphLink<int> generarGrafoAleatorio(int numVertices) {
 
     return G;
 }
+
+// Función para calcular el peso total de un MST
+template <typename T>
+int calcularPeso(GraphLink<T>& G) {
+    int total = 0;
+    for (auto v : G.getListVertex()) {
+        for (const auto& e : v->getAdj()) {
+            if (v->getData() < e.getDest()->getData()) // Evitar contar duplicados
+                total += e.getWeight();
+        }
+    }
+    return total;
+}
