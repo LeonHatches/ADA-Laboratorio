@@ -1,22 +1,30 @@
-GraphLink<int> generarGrafoAleatorio(int numVertices) {
-    GraphLink<int> G;
-    srand(time(nullptr));
-
-    // Inserta vértices del 1 al n
-    for (int i = 1; i <= numVertices; i++) 
-        G.insertVertex(i);
-
-    // Asegura que el grafo sea conexo uniendo en cadena
-    for (int i = 1; i < numVertices; i++) 
-        G.insertEdge(i, i + 1, rand() % 20 + 1);
-
-    // Agrega aristas adicionales aleatorias
-    int aristasExtras = numVertices * 2;
-    for (int i = 0; i < aristasExtras; i++) {
-        int a = rand() % numVertices + 1;
-        int b = rand() % numVertices + 1;
-        if (a != b) 
-            G.insertEdge(a, b, rand() % 20 + 1);
+template <typename T>
+class Vertex {
+private:
+    T data;
+    list<Edge<T>> adj;
+public:
+    Vertex(T d) : data(d) {}
+    
+    T getData() const { return data; }
+    list<Edge<T>>& getAdj() { return adj; }
+    const list<Edge<T>>& getAdj() const { return adj; }
+    
+    void addEdge(Vertex<T>* dest, int weight) {
+        adj.push_back(Edge<T>(this, dest, weight));
     }
-    return G;
-}
+};
+
+template <typename T>
+class Edge {
+private:
+    Vertex<T>* origin;
+    Vertex<T>* dest;
+    int weight;
+public:
+    Edge(Vertex<T>* o, Vertex<T>* d, int w) : origin(o), dest(d), weight(w) {}
+    
+    Vertex<T>* getOrigin() const { return origin; }
+    Vertex<T>* getDest() const { return dest; }
+    int getWeight() const { return weight; }
+};
