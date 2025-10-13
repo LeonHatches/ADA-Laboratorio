@@ -65,6 +65,7 @@ public:
         Vertex<T>* v1 = findVertex(from);
         Vertex<T>* v2 = findVertex(to);
         if (v1 && v2) {
+            // Para evitar duplicados exactos, podrías comprobar existencia antes; aquí lo insertamos directamente
             v1->addEdge(v2, weight);
             v2->addEdge(v1, weight); // Para grafo no dirigido
         }
@@ -97,7 +98,8 @@ public:
 template <typename T>
 class UnionFind {
 private:
-    map<Vertex<T>, Vertex<T>> parent;
+    // Usar punteros como claves/valores
+    map<Vertex<T>*, Vertex<T>*> parent;
     map<Vertex<T>*, int> rank;
 public:
     void makeSet(Vertex<T>* v) {
@@ -133,9 +135,10 @@ template <typename T>
 GraphLink<T> kruskal(GraphLink<T>& G) {
     GraphLink<T> mst;
     UnionFind<T> uf;
-    vector<pair<int, pair<Vertex<T>, Vertex<T>>>> edges;
+    // vector de: (peso, (vertex*, vertex*))
+    vector<pair<int, pair<Vertex<T>*, Vertex<T>*>>> edges;
     
-    // Crear vértices en el MST (copia solo los datos, no los objetos Vertex originales)
+    // Crear vértices en el MST (copia solo los datos)
     for (auto v : G.getListVertex()) {
         mst.insertVertex(v->getData());
         uf.makeSet(v); 
@@ -145,6 +148,7 @@ GraphLink<T> kruskal(GraphLink<T>& G) {
     for (auto v : G.getListVertex()) {
         for (const auto& e : v->getAdj()) {
             // Asegurarse de agregar cada arista solo una vez en el caso no dirigido
+            // (esto asume que T soporta operator<, con int funciona)
             if (v->getData() < e.getDest()->getData()) { 
                 edges.push_back({e.getWeight(), {v, e.getDest()}});
             }
@@ -163,7 +167,7 @@ GraphLink<T> kruskal(GraphLink<T>& G) {
         
         // si los vértices no estan ya en la misma componente
         if (uf.find(u_original) != uf.find(v_original)) {
-            // agrega la arista al MST
+            // agrega la arista al MST (usa los datos, insertEdge buscará los vértices copiados en mst)
             mst.insertEdge(u_original->getData(), v_original->getData(), weight);
             // unir
             uf.unionSets(u_original, v_original);
@@ -173,7 +177,7 @@ GraphLink<T> kruskal(GraphLink<T>& G) {
     return mst;
 }
 
-// Algoritmo de Prim
+// Algoritmo de Prim (implementación simple O(V^2))
 template <typename T>
 GraphLink<T> prim(GraphLink<T>& G, T start) {
     GraphLink<T> mst;
@@ -188,7 +192,7 @@ GraphLink<T> prim(GraphLink<T>& G, T start) {
     
     map<Vertex<T>*, bool> inMST;
     map<Vertex<T>*, int> key;    
-    map<Vertex<T>, Vertex<T>> parent; 
+    map<Vertex<T>*, Vertex<T>*> parent; 
     
     for (auto v : vertices) {
         inMST[v] = false;
@@ -201,7 +205,7 @@ GraphLink<T> prim(GraphLink<T>& G, T start) {
     
     key[startVertex] = 0; 
 
-    for (int i = 0; i < vertices.size(); i++) {
+    for (int i = 0; i < (int)vertices.size(); i++) {
         Vertex<T>* u = nullptr;
         int minKey = INT_MAX;
         
@@ -226,7 +230,7 @@ GraphLink<T> prim(GraphLink<T>& G, T start) {
             
             if (!inMST[v] && weight < key[v]) {
                 parent[v] = u;    
-                key[v] = weight;  /
+                key[v] = weight;
             }
         }
     }
@@ -253,7 +257,7 @@ GraphLink<int> generarGrafoAleatorio(int numVertices) {
     for (int i = 0; i < aristasExtras; i++) {
         int a = rand() % numVertices + 1;
         int b = rand() % numVertices + 1;
-        // evitar autobucles y aristas existentes
+        // evitar autobucles y aristas existentes (comprobación simple)
         if (a != b) {
             int peso = rand() % 20 + 1;
             G.insertEdge(a, b, peso);
@@ -278,7 +282,7 @@ int calcularPeso(GraphLink<T>& G) {
 }
 
 int main() {
-    srand(time(nullptr));
+    srand((unsigned)time(nullptr));
 
     vector<int> tamanos = {10, 50, 100}; 
 
