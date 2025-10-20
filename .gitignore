@@ -41,4 +41,5 @@ Makefile
 /build/
 bin/
 obj/
+/env/
 
