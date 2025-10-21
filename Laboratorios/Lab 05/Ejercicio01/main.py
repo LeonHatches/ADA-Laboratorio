@@ -38,12 +38,11 @@ def getGraph():
 
 if __name__ == "__main__":
     graph = getGraph()
-
+    print("Grafo original")
     graph.print_graph()
 
     distancias = dijkstra(graph, "A")
 
-    print("\nDijkstra desde A")
-
+    print("\nCaminos más cortos con Dijkstra:")
     for nodo, dist in distancias.items():
         print(f"{nodo}: {dist}")
