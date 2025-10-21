@@ -1,10 +1,9 @@
 import sys
 import os
-
 sys.path.append(os.path.abspath('..'))
 
-from structures.graph import GraphLink
-from algorithms.dijkstra import dijkstra
+from utils.graph import GraphLink, Vertex, Edge
+from utils.dijkstra import dijkstra
 import random
 
 def getGraph():
