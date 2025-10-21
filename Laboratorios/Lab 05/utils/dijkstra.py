@@ -1,4 +1,4 @@
-from graph import GraphLink, Vertex, Edge
+from .graph import GraphLink, Vertex, Edge
 import heapq
 
 def dijkstra(grafo : GraphLink, inicio):
