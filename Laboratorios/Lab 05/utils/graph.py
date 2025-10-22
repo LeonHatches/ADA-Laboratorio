@@ -9,7 +9,7 @@ class Edge:
 class Vertex:
     def __init__(self, data):
         self.data = data
-        self.adj_list = []
+        self.adj_list : list[Edge] = []
     
     def add_edge(self, dest, weight):
         if any(e.dest == dest for e in self.adj_list):
@@ -21,7 +21,7 @@ class Vertex:
 
 class GraphLink:
     def __init__(self):
-        self.vertices = []
+        self.vertices : list[Vertex] = []
 
     def search_vertex(self, data):
         for v in self.vertices:
@@ -58,3 +58,14 @@ class GraphLink:
         for vertex in self.vertices:
             edges = " ".join(str(e) for e in vertex.adj_list)
             print(f"{vertex.data} -> {edges}")
+    
+class GraphLinkDirected(GraphLink):
+    
+    def insert_edge(self, vFrom, vTo, weight):
+        v_from = self.search_vertex(vFrom)
+        v_to = self.search_vertex(vTo)
+
+        if v_from and v_to:
+            v_from.add_edge(v_to, weight)
+        else:
+            print("Algún vértice ingresado no existe")
