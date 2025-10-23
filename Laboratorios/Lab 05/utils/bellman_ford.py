@@ -9,7 +9,7 @@ def bellman_ford(grafo : GraphLink, inicio):
     dist = {v.data : float('inf') for v in grafo.vertices}
     dist[inicio] = 0
 
-    for i in range(len(grafo.vertices)):
+    for i in range(len(grafo.vertices) - 1):
         for vertex in grafo.vertices:
             for edge in vertex.adj_list:
                 dest = edge.dest
