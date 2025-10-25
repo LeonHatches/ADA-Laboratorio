@@ -17,7 +17,7 @@
 # Carpeta de configuración de VS Code
 .vscode/
 
-# Archivos temporales
+# Archivos temporales y logs
 *.log
 *.tmp
 *.temp
@@ -31,7 +31,7 @@ Desktop.ini
 *.swp
 *.swo
 
-# Archivos de CMake (si llegas a usarlo)
+# Archivos de CMake
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
@@ -41,5 +41,47 @@ Makefile
 /build/
 bin/
 obj/
-/env/
 
+# Entornos virtuales de Python
+env/
+venv/
+ENV/
+.env/
+.venv/
+
+# Archivos generados de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Archivos de configuración o dependencias locales
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-wheel-metadata/
+.pytest_cache/
+.tox/
+.coverage
+coverage.xml
+*.cover
+nosetests.xml
+
+# Configuración de Jupyter y caché
+.ipynb_checkpoints
+*.ipynb~
+
+# Archivos de herramientas o IDEs
+.idea/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+.sublime-project
+.sublime-workspace
+
+# Archivos del sistema
+.DS_Store
