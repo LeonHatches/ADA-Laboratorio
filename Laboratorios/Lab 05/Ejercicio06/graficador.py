@@ -6,7 +6,7 @@ from utils.graph import GraphLink
 from utils.mapa import get_graph, get_posiciones
 
 
-def graficar_grafo(grafo : GraphLink, posiciones=None, mapa=True):
+def graficar_grafo(grafo : GraphLink, posiciones=None, mapa=True, ruta=None):
     
     G = nx.Graph()
 
@@ -67,10 +67,18 @@ def graficar_grafo(grafo : GraphLink, posiciones=None, mapa=True):
         font_color='black',
         verticalalignment='bottom'
     )
+    edge_labels = nx.get_edge_attributes(G, 'weight')
+    nx.draw_networkx_edge_labels(
+        G,
+        posiciones,
+        edge_labels=edge_labels,
+        font_color='blue',
+        font_size=7
+    )
 
+    plt.title(f"Rutas aéreas del Perú {'desde ' + ruta if ruta else ''} (en KM)", fontsize=14, fontweight='bold', color='darkblue', pad=20)
     plt.axis('off')
     plt.show()
-
 
 if __name__ == "__main__":
     g = GraphLink()
