@@ -1,11 +1,12 @@
 import sys
 import os
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import random, time
 from utils.graph import GraphLink
 from utils.bellman_ford import bellman_ford
 from utils.dijkstra import dijkstra
+from utils.floyd_warshall import floyd_warshall
 
 def generar_grafo(num_vertices):
     grafo = GraphLink()
@@ -33,7 +34,7 @@ def generar_grafo(num_vertices):
     return grafo
 
 if __name__ == "__main__":
-    sizes = range(100, 10000, 100)
+    sizes = range(100, 1000, 100)
 
     for i in range(len(sizes)):
         grafo = generar_grafo(sizes[i])
@@ -43,12 +44,17 @@ if __name__ == "__main__":
         start = time.time()
         dijkstra(grafo, 0)
         end = time.time()
-        print(f"Dijkstra     - Tiempo de ejecución = {end - start}")
+        print(f"Dijkstra       - Tiempo de ejecución = {end - start}")
 
         start = time.time()
         bellman_ford(grafo, 0)
         end = time.time()
-        print(f"Bellman-Ford - Tiempo de ejecución = {end - start}")
+        print(f"Bellman-Ford   - Tiempo de ejecución = {end - start}")
+
+        start = time.time()
+        floyd_warshall(grafo, False)
+        end = time.time()
+        print(f"Floyd-Warshall - Tiempo de ejecución = {end - start}")
 
         print()
 
