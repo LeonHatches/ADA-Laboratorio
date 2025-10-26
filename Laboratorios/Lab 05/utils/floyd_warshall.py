@@ -1,13 +1,10 @@
 from .graph import GraphLink
 
-def floyd_warshall (g: GraphLink, MOSTRAR_TABLA):
+def floyd_warshall (g: GraphLink, MOSTRAR_TABLA = False):
     n = len(g.vertices)
-    
-    if not MOSTRAR_TABLA:
-        MOSTRAR_TABLA = False
 
     if n == 0:
-        return []
+        return [], []
     
     # INICIALIZAR PESOS Y DICCIONARIO
     index = {v.data: i for i, v in enumerate(g.vertices)}
