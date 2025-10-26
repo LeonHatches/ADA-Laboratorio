@@ -45,6 +45,15 @@ class GraphLink:
         else:
             print("Algún vértice ingresado no existe")
 
+    def insert_edge_directed(self, vFrom, vTo, weight):
+        v_from = self.search_vertex(vFrom)
+        v_to = self.search_vertex(vTo)
+
+        if v_from and v_to:
+            v_from.add_edge(v_to, weight)
+        else:
+            print("Algún vértice ingresado no existe")
+
     def get_edge_weight(self, vFrom, vTo):
         v = self.search_vertex(vFrom)
         if not v:
