@@ -104,4 +104,25 @@ def get_posiciones():
         86: (645, 215)
     }
 
-    return posiciones
+    return get_posiciones_mapa(posiciones)
+
+def get_posiciones_mapa(ancho_figma=1400, alto_figma=2200):
+    posiciones_figma = get_posiciones()
+    posiciones_mapa = {}
+
+    for key, (x, y) in posiciones_figma.items():
+        posiciones_mapa[key] = figma_a_networkx(x, y, ancho_figma, alto_figma)
+
+    return posiciones_mapa
+
+def figma_a_networkx(x_figma, y_figma, ancho_figma, alto_figma):
+    x_min, x_max = -82, -68
+    y_min, y_max = -19, 0
+
+    x_norm = x_figma / ancho_figma
+    y_norm = y_figma / alto_figma
+
+    x_mapa = x_min + (x_max - x_min) * x_norm
+    y_mapa = y_max - (y_max - y_min) * y_norm 
+
+    return (x_mapa, y_mapa)
