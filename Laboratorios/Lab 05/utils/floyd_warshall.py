@@ -38,7 +38,7 @@ def mostrar_tabla(dist, index):
 
     ancho = 6
 
-    print("     ", end="")
+    print("      ", end="")
     for v in vertices:
         print(f"{v:>{ancho}}", end="")
     print()
@@ -52,7 +52,7 @@ def mostrar_tabla(dist, index):
             if valor == float('inf'):
                 print(f"{'∞':>{ancho}}", end="")
             else:
-                print(f"{valor:>{ancho}.1f}", end="")
+                print(f"{valor:>{ancho}}", end="")
         print()
 
 if __name__ == "__main__":
