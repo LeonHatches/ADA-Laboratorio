@@ -17,4 +17,11 @@ def floyd_warshall (g: GraphLink):
             j = index[edge.dest.data]
             dist[i][j] = edge.weight
 
+    # FLOYD WARSHALL
+    for i in range(n):
+        for j in range(n):
+            for k in range(n):
+                if dist[j][i] + dist[i][k] < dist [j][k]:
+                    dist[j][k] = dist[j][i] + dist[i][k]
     
+    return dist, index
