@@ -1,4 +1,4 @@
-from graph import GraphLink
+from .graph import GraphLink
 
 MOSTRAR_TABLA = True
 
