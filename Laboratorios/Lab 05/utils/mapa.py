@@ -106,6 +106,106 @@ def get_posiciones():
 
     return get_posiciones_mapa(posiciones)
 
+def get_graph_airports():
+    g = GraphLink()
+
+    # AEROPUERTOS
+    g.insert_vertex("Arequipa")
+    g.insert_vertex("Cusco")
+    g.insert_vertex("Tacna")
+    g.insert_vertex("Juliaca")
+    g.insert_vertex("Piura")
+    g.insert_vertex("Tumbes")
+    g.insert_vertex("Talara")
+    g.insert_vertex("Chiclayo")
+    g.insert_vertex("Trujillo")
+    g.insert_vertex("Cajamarca")
+    g.insert_vertex("Tarapoto")
+    g.insert_vertex("Pucallpa")
+    g.insert_vertex("Iquitos")
+    g.insert_vertex("Huaraz")
+    g.insert_vertex("Huanuco")
+    g.insert_vertex("Huancayo")
+    g.insert_vertex("Ayacucho")
+    g.insert_vertex("Andahuaylas")
+    g.insert_vertex("Puerto Maldonado")
+    g.insert_vertex("Moquegua")
+
+    # Conexiones desde Lima 
+    g.insert_edge("Lima", "Arequipa", 766)
+    g.insert_edge("Lima", "Cusco", 575)
+    g.insert_edge("Lima", "Tacna", 986)
+    g.insert_edge("Lima", "Juliaca", 839)
+    g.insert_edge("Lima", "Piura", 858)
+    g.insert_edge("Lima", "Tumbes", 1015)
+    g.insert_edge("Lima", "Talara", 952)
+    g.insert_edge("Lima", "Chiclayo", 662)
+    g.insert_edge("Lima", "Trujillo", 488)
+    g.insert_edge("Lima", "Cajamarca", 566)
+    g.insert_edge("Lima", "Tarapoto", 621)
+    g.insert_edge("Lima", "Pucallpa", 490)
+    g.insert_edge("Lima", "Iquitos", 1013)
+    g.insert_edge("Lima", "Huaraz", 285)
+    g.insert_edge("Lima", "Huanuco", 251)
+    g.insert_edge("Lima", "Huancayo", 200)
+    g.insert_edge("Lima", "Ayacucho", 523)
+    g.insert_edge("Lima", "Andahuaylas", 776)
+    g.insert_edge("Lima", "Puerto Maldonado", 700)
+    g.insert_edge("Lima", "Moquegua", 1000)
+
+    # Conexiones regionales / directas asumidas
+    g.insert_edge("Arequipa", "Cusco", 204)
+    g.insert_edge("Arequipa", "Tacna", 225)
+    g.insert_edge("Arequipa", "Moquegua", 108)
+    g.insert_edge("Tacna", "Moquegua", 116)
+
+    g.insert_edge("Juliaca", "Cusco", 295)
+    g.insert_edge("Juliaca", "Puerto Maldonado", 340)
+    g.insert_edge("Cusco", "Puerto Maldonado", 318)
+
+    g.insert_edge("Piura", "Talara", 99)
+    g.insert_edge("Piura", "Chiclayo", 196)
+    g.insert_edge("Chiclayo", "Trujillo", 174)
+    g.insert_edge("Trujillo", "Huaraz", 228)
+    g.insert_edge("Cajamarca", "Trujillo", 119)
+
+    g.insert_edge("Tarapoto", "Pucallpa", 290)
+    g.insert_edge("Iquitos", "Tarapoto", 462)
+
+    g.insert_edge("Huancayo", "Huanuco", 263)
+    g.insert_edge("Ayacucho", "Andahuaylas", 179)
+
+    g.insert_edge("Arequipa", "Juliaca", 181)
+
+
+def get_pos_airports():
+    posiciones = {
+        "Tacna": (1155, 1943),
+        "Ilo": (1077, 1852),
+        "Juliaca": (1163, 1700),
+        "Cuzco": (1018, 1499),
+        "Arequipa": (1033, 1774),
+        "Puerto Maldonado": (1219, 1423),
+        "Ayacucho": (766, 1494),
+        "Andahuaylas": (858, 1531),
+        "Jauja": (668, 1355),
+        "Huánuco": (595, 1126),
+        "Lima": (617, 1362),
+        "Huaráz": (448, 1100),
+        "Tarapoto": (568, 844),
+        "Cajamarca": (351, 881),
+        "Trujillo": (343, 993),
+        "Chiclayo": (244, 843),
+        "Piura": (184, 684),
+        "Talara": (104, 639),
+        "Tumbes": (169, 563),
+        "Iquitos": (887, 542),
+        "Pucallpa": (774, 1017)
+    }
+
+    return get_posiciones_mapa(posiciones)
+
+
 def get_posiciones_mapa(posiciones_figma, ancho_figma=1400, alto_figma=2200):
     posiciones_mapa = {}
 
