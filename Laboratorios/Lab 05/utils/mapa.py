@@ -1,4 +1,4 @@
-from graph import GraphLink
+from .graph import GraphLink
 
 def get_graph():
     g = GraphLink()
@@ -106,8 +106,7 @@ def get_posiciones():
 
     return get_posiciones_mapa(posiciones)
 
-def get_posiciones_mapa(ancho_figma=1400, alto_figma=2200):
-    posiciones_figma = get_posiciones()
+def get_posiciones_mapa(posiciones_figma, ancho_figma=1400, alto_figma=2200):
     posiciones_mapa = {}
 
     for key, (x, y) in posiciones_figma.items():
