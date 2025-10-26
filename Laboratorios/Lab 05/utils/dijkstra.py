@@ -1,19 +1,16 @@
 from .graph import GraphLink, Vertex, Edge
 import heapq
 
-def dijkstra(grafo : GraphLink, inicio):
-    initial_vertex : Vertex = grafo.search_vertex(inicio)
-
+def dijkstra(grafo: GraphLink, inicio):
+    initial_vertex: Vertex = grafo.search_vertex(inicio)
     if not initial_vertex:
-        return {}
+        return {}, {}
 
-    dist = {v.data : float('inf') for v in grafo.vertices}
+    dist = {v.data: float('inf') for v in grafo.vertices}
+    prev = {v.data: None for v in grafo.vertices}
     dist[inicio] = 0
 
     pq = [(0, initial_vertex)]
-
-    actual_dist : float
-    actual_vertex : Vertex
 
     while pq:
         actual_dist, actual_vertex = heapq.heappop(pq)
@@ -28,9 +25,30 @@ def dijkstra(grafo : GraphLink, inicio):
 
             if new_dist < dist[vecino.data]:
                 dist[vecino.data] = new_dist
+                prev[vecino.data] = actual_vertex.data
                 heapq.heappush(pq, (new_dist, vecino))
 
-    return dist
+    return dist, prev
+
+def grafo_dijkstra(grafo: GraphLink, dist, prev):
+    nuevo_grafo = GraphLink()
+
+    for v in grafo.vertices:
+        nuevo_grafo.insert_vertex(v.data)
+
+    for nodo, padre in prev.items():
+        if padre is not None:
+            peso = None
+            v_padre = grafo.search_vertex(padre)
+            for edge in v_padre.adj_list:
+                if edge.dest.data == nodo:
+                    peso = edge.weight
+                    break
+            if peso is not None:
+                nuevo_grafo.insert_edge(padre, nodo, peso)
+
+    return nuevo_grafo
+
 
 if __name__ == "__main__":
     grafo = GraphLink()
