@@ -41,4 +41,4 @@ if __name__ == "__main__":
     graph.print_graph()
 
     print("\n\tTABLA DE PESOS EN PARES DE VÉRTICES (FLOYD-WARSHALL)")
-    floyd_warshall(graph)
+    floyd_warshall(graph, True)

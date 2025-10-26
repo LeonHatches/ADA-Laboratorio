@@ -1,10 +1,11 @@
 from .graph import GraphLink
 
-MOSTRAR_TABLA = True
-
-def floyd_warshall (g: GraphLink):
+def floyd_warshall (g: GraphLink, MOSTRAR_TABLA):
     n = len(g.vertices)
     
+    if not MOSTRAR_TABLA:
+        MOSTRAR_TABLA = False
+
     if n == 0:
         return []
     
@@ -67,4 +68,4 @@ if __name__ == "__main__":
     grafo.insert_edge("B", "D", 2)
     grafo.insert_edge("C", "D", 3)
 
-    floyd_warshall(grafo)
+    floyd_warshall(grafo, True)

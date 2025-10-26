@@ -1,12 +1,13 @@
 import sys
 import os
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 import random, time
 import matplotlib.pyplot as plt
 from utils.graph import GraphLink
 from utils.bellman_ford import bellman_ford
 from utils.dijkstra import dijkstra
+from utils.floyd_warshall import floyd_warshall
 
 def generar_grafo(num_vertices):
     grafo = GraphLink()
@@ -34,9 +35,10 @@ def generar_grafo(num_vertices):
     return grafo
 
 if __name__ == "__main__":
-    sizes = range(100, 3001, 100)
+    sizes = range(100, 1001, 100)
     tiempos_dijkstra = []
-    tiempos_bellman = []
+    tiempos_bellman  = []
+    tiempos_floyd    = []
 
     for n in sizes:
         grafo = generar_grafo(n)
@@ -53,12 +55,19 @@ if __name__ == "__main__":
 
         tiempos_bellman.append(end - start)
 
-        print(f"{n} vértices -> Dijkstra: {tiempos_dijkstra[-1]:.6f}s | Bellman-Ford: {tiempos_bellman[-1]:.6f}s")
+        start = time.time()
+        floyd_warshall(grafo, False)
+        end = time.time()
+
+        tiempos_floyd.append(end - start)
+
+        print(f"{n} vértices -> Dijkstra: {tiempos_dijkstra[-1]:.6f}s | Bellman-Ford: {tiempos_bellman[-1]:.6f}s | Floyd-Warshall: {tiempos_floyd[-1]:.6f}s")
 
     # Graficar resultados
     plt.figure(figsize=(10, 6))
     plt.plot(list(sizes), tiempos_dijkstra, label="Dijkstra", marker='o')
     plt.plot(list(sizes), tiempos_bellman, label="Bellman-Ford", marker='s')
+    plt.plot(list(sizes), tiempos_floyd, label="Floyd-Warshall", marker='x')
     plt.title("Comparación de tiempos de ejecución")
     plt.xlabel("Número de vértices")
     plt.ylabel("Tiempo (segundos)")
