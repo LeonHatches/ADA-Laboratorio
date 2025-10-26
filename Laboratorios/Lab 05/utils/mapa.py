@@ -110,6 +110,35 @@ def get_graph_airports():
     g = GraphLink()
 
     # AEROPUERTOS
+    g.insert_vertex("Lima")
+    g.insert_vertex("Arequipa")
+    g.insert_vertex("Cusco")
+    g.insert_vertex("Tacna")
+    g.insert_vertex("Juliaca")
+    g.insert_vertex("Piura")
+    g.insert_vertex("Tumbes")
+    g.insert_vertex("Talara")
+    g.insert_vertex("Chiclayo")
+    g.insert_vertex("Trujillo")
+    g.insert_vertex("Cajamarca")
+    g.insert_vertex("Tarapoto")
+    g.insert_vertex("Pucallpa")
+    g.insert_vertex("Iquitos")
+    g.insert_vertex("Huaraz")
+    g.insert_vertex("Huanuco")
+    g.insert_vertex("Huancayo")
+    g.insert_vertex("Ayacucho")
+    g.insert_vertex("Andahuaylas")
+    g.insert_vertex("Puerto Maldonado")
+    g.insert_vertex("Moquegua")
+
+    return g
+
+def get_graph_airports_and_edges():
+    g = GraphLink()
+
+    # AEROPUERTOS
+    g.insert_vertex("Lima")
     g.insert_vertex("Arequipa")
     g.insert_vertex("Cusco")
     g.insert_vertex("Tacna")
@@ -177,21 +206,23 @@ def get_graph_airports():
 
     g.insert_edge("Arequipa", "Juliaca", 181)
 
+    return g
+
 
 def get_pos_airports():
     posiciones = {
         "Tacna": (1155, 1943),
-        "Ilo": (1077, 1852),
+        "Moquegua": (1077, 1852),
         "Juliaca": (1163, 1700),
-        "Cuzco": (1018, 1499),
+        "Cusco": (1018, 1499),
         "Arequipa": (1033, 1774),
         "Puerto Maldonado": (1219, 1423),
         "Ayacucho": (766, 1494),
         "Andahuaylas": (858, 1531),
-        "Jauja": (668, 1355),
-        "Huánuco": (595, 1126),
-        "Lima": (617, 1362),
-        "Huaráz": (448, 1100),
+        "Huancayo": (668, 1355),
+        "Huanuco": (595, 1126),
+        "Lima": (520, 1362),
+        "Huaraz": (448, 1100),
         "Tarapoto": (568, 844),
         "Cajamarca": (351, 881),
         "Trujillo": (343, 993),
