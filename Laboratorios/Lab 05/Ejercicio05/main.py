@@ -35,7 +35,7 @@ def generar_grafo(num_vertices):
     return grafo
 
 if __name__ == "__main__":
-    sizes = range(100, 1001, 100)
+    sizes = range(10, 101, 10)
     tiempos_dijkstra = []
     tiempos_bellman  = []
     tiempos_floyd    = []

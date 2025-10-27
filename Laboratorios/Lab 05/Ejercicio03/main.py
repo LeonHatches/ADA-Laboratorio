@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils.graph import GraphLinkDirected
 from utils.bellman_ford import bellman_ford

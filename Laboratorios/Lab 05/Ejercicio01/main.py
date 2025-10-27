@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.abspath('..'))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils.graph import GraphLink, Vertex, Edge
 from utils.dijkstra import dijkstra
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     print("Grafo original")
     graph.print_graph()
 
-    distancias = dijkstra(graph, "A")
+    distancias, _ = dijkstra(graph, "A")
 
     print("\nCaminos más cortos con Dijkstra:")
     for nodo, dist in distancias.items():

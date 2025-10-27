@@ -8,7 +8,7 @@ grafo_inicial   = get_graph_airports_and_edges()
 pos_aeropuertos = get_pos_airports()
 graficar_grafo(grafo_inicial, pos_aeropuertos, True)
 
-# PROGRAMA DE INGRESAR CIUDAD
+# PROGRAMA DE INGRESAR CIUDADd
 ciudades = [v.data for v in grafo_inicial.vertices]
 
 print("\nRUTA DE CIUDADES A TODO EL PERÚ\nCiudades disponibles:")

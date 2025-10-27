@@ -76,7 +76,8 @@ def graficar_grafo(grafo : GraphLink, posiciones=None, mapa=True, ruta=None):
         font_size=7
     )
 
-    plt.title(f"Rutas aéreas del Perú {'desde ' + ruta if ruta else ''} (en KM)", fontsize=14, fontweight='bold', color='darkblue', pad=20)
+    plt.title(f"Rutas aéreas del Perú {'desde ' + ruta if ruta else ''} (en KM)",
+              fontsize=14, fontweight='bold', color='darkblue', pad=20)
     plt.axis('off')
     plt.show()
 
