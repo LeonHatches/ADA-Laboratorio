@@ -34,7 +34,7 @@ def generar_grafo(num_vertices):
     return grafo
 
 if __name__ == "__main__":
-    sizes = range(100, 1000, 100)
+    sizes = range(50, 501, 50)
 
     for i in range(len(sizes)):
         grafo = generar_grafo(sizes[i])
