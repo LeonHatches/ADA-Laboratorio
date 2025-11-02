@@ -10,6 +10,7 @@ pair<float, vector<float>> backpack (vector<int>& peso, vector<int>& valor, int 
     int n = peso.size();
     vector <float> fraccion (n, 0.0f);
 
+    // Indices para ordenar de mayor a menor
     vector<int> indices(n);
     for (int i = 0 ; i < n ; i++)
         indices[i] = i;
@@ -21,13 +22,16 @@ pair<float, vector<float>> backpack (vector<int>& peso, vector<int>& valor, int 
     float valor_max = 0.0f;
     int  pesoActual = 0;
 
+    // Recorre objetos de mayor a menor rentabilidad
     for (int i : indices) {
+
+        // Si cabe completo
         if (pesoActual + peso[i] <= W) {
-            
             fraccion[i] = 1.0f;
             pesoActual += peso[i];
             valor_max  += valor[i];
         
+        // Solo cabe una fracción
         } else {
             
             float restante = W - pesoActual;
@@ -35,7 +39,7 @@ pair<float, vector<float>> backpack (vector<int>& peso, vector<int>& valor, int 
                 fraccion[i] = (float) restante / peso[i];
                 valor_max  += valor[i] * fraccion[i];
             }
-            break;
+            break; // Mochila llena
         }
     }
 
