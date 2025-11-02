@@ -6,7 +6,20 @@ using namespace std;
 
 pair <int, vector<int>> backpack (vector<int>& peso, vector<int>& valor, int W) {
     
-    return {0, {0}};
+    vector<vector<int>> dp (peso.size() + 1, vector<int>(W + 1, 0));
+
+    for (int i = 1 ; i <= peso.size() ; i++) {
+        for (int j = 0 ; j <= W ; j++) {
+
+            if (peso[i-1] <= j)
+                dp[i][j] = max(dp[i-1][j], dp[i-1][j - peso[i-1]] + valor[i-1]);
+            
+            else
+                dp[i][j] = dp[i-1][j];
+        }
+    }
+
+    return {dp[peso.size()][W], {0}};
 }
 
 int main () {
