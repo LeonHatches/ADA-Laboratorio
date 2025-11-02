@@ -19,7 +19,16 @@ pair <int, vector<int>> backpack (vector<int>& peso, vector<int>& valor, int W) 
         }
     }
 
-    return {dp[peso.size()][W], {0}};
+    vector<int> objetos;
+    int j = W;
+    for (int i = peso.size(); i > 0 ; i--) {
+        if (dp[i][j] != dp[i-1][j]) {
+            objetos.push_back(i-1);
+            j -= peso[i-1];
+        }
+    }
+
+    return {dp[peso.size()][W], objetos};
 }
 
 int main () {
