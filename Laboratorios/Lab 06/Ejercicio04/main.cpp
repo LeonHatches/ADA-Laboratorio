@@ -11,11 +11,35 @@ pair<float, vector<float>> backpack (vector<int>& peso, vector<int>& valor, int 
     vector <float> fraccion (n, 0.0f);
 
     vector<int> indices(n);
-    for (int i = 0 ; i < n ; i++) indices[i] = i;
+    for (int i = 0 ; i < n ; i++)
+        indices[i] = i;
 
-    
+    sort(indices.begin(), indices.end(), [&](int a, int b) {
+        return (float) valor[a] / peso[a] > (float) valor[b] / peso[b];
+    });
 
-    return {0, {}};
+    float valor_max = 0.0f;
+    int  pesoActual = 0;
+
+    for (int i : indices) {
+        if (pesoActual + peso[i] <= W) {
+            
+            fraccion[i] = 1.0f;
+            pesoActual += peso[i];
+            valor_max  += valor[i];
+        
+        } else {
+            
+            float restante = W - pesoActual;
+            if (restante > 0) {
+                fraccion[i] = (float) restante / peso[i];
+                valor_max  += valor[i] * fraccion[i];
+            }
+            break;
+        }
+    }
+
+    return {valor_max, fraccion};
 } 
 
 int main () {
@@ -30,9 +54,9 @@ int main () {
 
     // MOSTRAR OBJETOS
     cout << "Valor Máximo: " << resultado.first << endl;
-    cout << "Objetos Seleccionados: ";
+    cout << "Objetos Seleccionados: "<<endl;
     for (int i = 0 ; i < resultado.second.size() ; i++) {
         if (resultado.second[i] > 0)
-            cout << " - " << objetos[i] << " (" << resultado.second[i] * 100 << "% )"<<endl;
+            cout << " - " << objetos[i] << " ( " << resultado.second[i] * 100 << "% )"<<endl;
     }
 }
