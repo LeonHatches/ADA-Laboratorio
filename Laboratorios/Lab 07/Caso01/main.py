@@ -1,4 +1,4 @@
-# from ordenar_pacientes import merge_sort_pacientes
+from ordenar_pacientes import merge_sort_pacientes
 
 pacientes = [
     {"nombre": "Juan", "gravedad": 8, "tiempo": 3},
@@ -9,4 +9,5 @@ pacientes = [
 ]
 
 # Utilizar divide y venceras para ordenar pacientes
-# ordenados = merge_sort_pacientes(pacientes)
+ordenados = merge_sort_pacientes(pacientes)
+print("Pacientes en orden de gravedad: ", ordenados)
