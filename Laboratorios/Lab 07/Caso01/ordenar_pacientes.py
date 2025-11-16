@@ -9,4 +9,18 @@ def merge_sort_pacientes(pacientes):
     return merge (left, right)
 
 def merge (left, right):
-    return 0
+    resultado = []
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if left[i]["gravedad"] > right[j]["gravedad"]:
+            resultado.append(left[i])
+            i += 1
+
+        else:
+            resultado.append(right[j])
+            j += 1
+
+    resultado.extend(left[i:])
+    resultado.extend(right[j:])
+    return resultado
