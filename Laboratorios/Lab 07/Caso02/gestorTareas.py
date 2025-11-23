@@ -325,19 +325,56 @@ class VistaDiaria:
         self.configurar_columna_estadisticas(frame_contenido)
     
     def configurar_columna_tareas(self, parent):
-        """Configura la columna de tareas organizadas por prioridad"""
+        """Configura la columna de tareas organizadas por prioridad CON SCROLLBAR"""
         frame_tareas = tk.Frame(parent, bg='white')
         frame_tareas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 15))
         
         # Título
         titulo_tareas = tk.Label(frame_tareas, text="SECUENCIA OPTIMIZADA DEL DÍA", 
-                               font=("Montserrat", 14, "bold"), bg='white', fg='#3C4043')
+                            font=("Montserrat", 14, "bold"), bg='white', fg='#3C4043')
         titulo_tareas.pack(pady=(0, 20))
         
-        # Frame para las tareas ordenadas
-        self.frame_secuencia_diaria = tk.Frame(frame_tareas, bg='white')
-        self.frame_secuencia_diaria.pack(fill=tk.BOTH, expand=True)
-    
+        # Frame contenedor para el canvas y scrollbar
+        frame_contenedor = tk.Frame(frame_tareas, bg='white')
+        frame_contenedor.pack(fill=tk.BOTH, expand=True)
+        
+        # Crear Canvas SIN ancho fijo para que sea responsive
+        canvas = tk.Canvas(frame_contenedor, bg='white', highlightthickness=0)
+        scrollbar = ttk.Scrollbar(frame_contenedor, orient="vertical", command=canvas.yview)
+        
+        # Frame scrollable para las tareas
+        self.frame_secuencia_diaria = tk.Frame(canvas, bg='white')
+        
+        # Configurar el canvas para el scrolling
+        def configurar_scrollregion(event=None):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+        
+        self.frame_secuencia_diaria.bind("<Configure>", configurar_scrollregion)
+        
+        # Crear ventana en el canvas SIN la opción stretch
+        canvas_window = canvas.create_window((0, 0), window=self.frame_secuencia_diaria, anchor="nw")
+        
+        # Configurar el canvas para que se expanda
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Empaquetar canvas y scrollbar
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Configurar el mouse wheel para scrolling
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        
+        canvas.bind("<MouseWheel>", _on_mousewheel)
+        self.frame_secuencia_diaria.bind("<MouseWheel>", _on_mousewheel)
+        
+        # Para que el frame interno se expanda con el canvas (RESPONSIVE)
+        def on_canvas_configure(event):
+            # Actualizar el ancho del frame interno cuando el canvas cambie de tamaño
+            canvas.itemconfig(canvas_window, width=event.width)
+        
+        canvas.bind("<Configure>", on_canvas_configure)
+            
     def configurar_columna_estadisticas(self, parent):
         """Configura la columna de estadísticas y recomendaciones"""
         frame_estadisticas = tk.Frame(parent, bg='#F8F9FA', width=350)
@@ -883,14 +920,9 @@ class CalendarioTareas:
         # Limpiar frame de días
         for widget in self.frame_dias.winfo_children():
             widget.destroy()
-        
-        # Actualizar panel de prioridades
+
         self.actualizar_panel_prioridades()
-        
-        # Actualizar recomendaciones
         self.actualizar_recomendaciones()
-        
-        # Configurar grid del calendario
         self.configurar_grid_calendario()
     
     def configurar_grid_calendario(self):
@@ -908,18 +940,15 @@ class CalendarioTareas:
                            font=("Montserrat", 10, "bold"), bg='white', fg='#5F6368')
             label.pack(expand=True)
         
-        # Obtener primer día del mes y número de días
         primer_dia = self.fecha_actual.replace(day=1)
         num_dias = calendar.monthrange(self.fecha_actual.year, self.fecha_actual.month)[1]
         dia_inicio = primer_dia.weekday()
-        
-        # Configurar pesos del grid
+
         for i in range(7):
             self.frame_dias.columnconfigure(i, weight=1)
         for i in range(6):
             self.frame_dias.rowconfigure(i + 1, weight=1)
-        
-        # Crear celdas del calendario
+
         fila, columna = 1, dia_inicio
         hoy = datetime.now().date()
         
@@ -943,7 +972,6 @@ class CalendarioTareas:
             # Configurar contenido del día
             self.configurar_contenido_dia(frame_dia, fecha_actual, dia, hoy, tareas_por_fecha)
             
-            # Actualizar posición
             columna += 1
             if columna == 7:
                 columna = 0
@@ -964,7 +992,6 @@ class CalendarioTareas:
                                   font=("Montserrat", 11), bg=frame_dia['bg'], fg=day_color)
             label_numero.place(x=8, y=5)
         
-        # Mostrar tareas para esta fecha
         if fecha in tareas_por_fecha:
             tareas_dia = tareas_por_fecha[fecha]
             
@@ -1001,34 +1028,59 @@ class CalendarioTareas:
 
     def configurar_sidebar_recomendaciones(self):
         """Configura el sidebar con recomendaciones de tareas"""
-        # Frame lateral
         frame_sidebar = tk.Frame(self.frame_calendario, bg='#F8F9FA', width=300)
-        frame_sidebar.pack(side=tk.RIGHT, fill=tk.Y, padx=(0, 20), pady=20)
+        frame_sidebar.pack(side=tk.RIGHT, fill=tk.BOTH, expand=False, padx=(0, 20), pady=20)
         frame_sidebar.pack_propagate(False)
         
-        # Título del sidebar
         titulo_sidebar = tk.Label(frame_sidebar, text="Tareas recomendadas", 
                                 font=("Montserrat", 14, "bold"), bg='#F8F9FA', fg='#3C4043')
-        titulo_sidebar.pack(pady=20)
+        titulo_sidebar.pack(pady=(0, 15))
+ 
+        frame_contenido_principal = tk.Frame(frame_sidebar, bg='#F8F9FA')
+        frame_contenido_principal.pack(fill=tk.BOTH, expand=True)
+
+        canvas = tk.Canvas(frame_contenido_principal, bg='#F8F9FA', highlightthickness=0)
+
+        scrollbar = ttk.Scrollbar(frame_contenido_principal, orient="vertical", command=canvas.yview)
+        scrollbar.pack(side="right", fill="y")
         
-        # Frame para las recomendaciones
-        self.frame_recomendaciones = tk.Frame(frame_sidebar, bg='#F8F9FA')
-        self.frame_recomendaciones.pack(fill=tk.BOTH, expand=True, padx=15)
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side="left", fill="both", expand=True)
         
-        self.actualizar_recomendaciones()
+        self.frame_recomendaciones = tk.Frame(canvas, bg='#F8F9FA')
+        
+        def configurar_scrollregion(event=None):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+            # Forzar que la barra de scroll siempre sea visible
+            if self.frame_recomendaciones.winfo_height() > canvas.winfo_height():
+                scrollbar.pack(side="right", fill="y")
+            else:
+                scrollbar.pack(side="right", fill="y")  # Siempre visible
+        
+        self.frame_recomendaciones.bind("<Configure>", configurar_scrollregion)
+
+        canvas_window = canvas.create_window((0, 0), window=self.frame_recomendaciones, anchor="nw")
+
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        
+        canvas.bind("<MouseWheel>", _on_mousewheel)
+        self.frame_recomendaciones.bind("<MouseWheel>", _on_mousewheel)
+
+        def on_canvas_configure(event):
+            canvas.itemconfig(canvas_window, width=event.width)
+        
+        canvas.bind("<Configure>", on_canvas_configure)
 
     def actualizar_recomendaciones(self):
         """Actualiza las recomendaciones en el sidebar"""
-        # Limpiar recomendaciones anteriores
         for widget in self.frame_recomendaciones.winfo_children():
             widget.destroy()
         
-        # Obtener tareas ordenadas por prioridad
         tareas_ordenadas = sorted(self.sistema.lista_tareas, 
                                 key=lambda x: (-x.urgencia, -x.prioridad))
-        
-        # Tomar las top 5 recomendaciones
-        recomendaciones = tareas_ordenadas[:5]
+ 
+        recomendaciones = tareas_ordenadas[:10]
         
         if not recomendaciones:
             label = tk.Label(self.frame_recomendaciones, 
@@ -1036,10 +1088,12 @@ class CalendarioTareas:
                         font=("Montserrat", 11), fg="#5F6368", bg='#F8F9FA',
                         justify=tk.CENTER)
             label.pack(pady=20)
-            return
+        else:
+            for i, tarea in enumerate(recomendaciones, 1):
+                self.crear_tarjeta_recomendacion(tarea, i)
         
-        for i, tarea in enumerate(recomendaciones, 1):
-            self.crear_tarjeta_recomendacion(tarea, i)
+        # Forzar la actualización del scrollregion
+        self.frame_recomendaciones.update_idletasks()
 
     def crear_tarjeta_recomendacion(self, tarea, numero):
         """Crea una tarjeta de recomendación para el sidebar"""
