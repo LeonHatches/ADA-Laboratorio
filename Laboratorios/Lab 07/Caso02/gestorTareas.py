@@ -60,24 +60,24 @@ class Tarea:
     def obtener_color_prioridad(self) -> str:
         """Devuelve el color según la categoría de prioridad"""
         colores_prioridad = {
-            "HACER YA": "#FF4444",      
-            "PRÓXIMAS": "#FF8800",      
-            "PUEDE ESPERAR": "#FFBB33", 
-            "BAJA PRIORIDAD": "#00C851" 
+            "HACER YA": "#FF4444",      # Rojo intenso - MÁS ÉNFASIS
+            "PRÓXIMAS": "#FF8800",      # Naranja brillante
+            "PUEDE ESPERAR": "#FFBB33", # Amarillo intenso
+            "BAJA PRIORIDAD": "#00C851" # Verde brillante
         }
         return colores_prioridad.get(self.categoria_prioridad, "#95A5A6")
     
     def obtener_color_tipo(self) -> str:
         """Devuelve colores específicos por tipo de tarea"""
         colores_tipo = {
-            "estudio": "#4285F4",      
-            "trabajo": "#EA4335",      
-            "ejercicio": "#34A853",    
-            "personal": "#FBBC05",     
-            "organizacion": "#8E44AD", 
-            "creativo": "#FF6B6B",     
-            "reunion": "#17A2B8",     
-            "urgente": "#E74C3C"  
+            "estudio": "#4285F4",      # Azul
+            "trabajo": "#EA4335",      # Rojo
+            "ejercicio": "#34A853",    # Verde
+            "personal": "#FBBC05",     # Amarillo
+            "organizacion": "#8E44AD", # Morado
+            "creativo": "#FF6B6B",     # Coral
+            "reunion": "#17A2B8",      # Turquesa
+            "urgente": "#E74C3C"       # Rojo intenso
         }
         return colores_tipo.get(self.tipo, "#95A5A6")
 
@@ -86,25 +86,12 @@ class AlgoritmoOptimizacionTareas:
     
     @staticmethod
     def algoritmo_greedy_seleccion(tareas: List[Tarea], tiempo_disponible: int = 480) -> List[Tarea]:
-        """GREEDY MEJORADO: Balance entre valor/tiempo y prioridad"""
+        """ALGORITMO GREEDY: Selecciona tareas por mejor valor/duración"""
+        # Ordenar por valor por minuto (greedy)
+        tareas_ordenadas = sorted(tareas, 
+                                key=lambda x: x.valor / x.duracion_minutos, 
+                                reverse=True)
         
-        def puntuacion_balanceada(tarea: Tarea) -> float:
-            # Factor 1: Valor por minuto (50%)
-            valor_por_minuto = tarea.valor / tarea.duracion_minutos
-            
-            # Factor 2: Prioridad absoluta (30%)
-            factor_prioridad = tarea.prioridad / 10.0
-            
-            # Factor 3: Urgencia (20%)
-            factor_urgencia = tarea.urgencia / 10.0
-            
-            # Combinación balanceada
-            return (valor_por_minuto * 0.5 + factor_prioridad * 0.3 + factor_urgencia * 0.2) * 100
-        
-        # Ordenar por puntuación balanceada
-        tareas_ordenadas = sorted(tareas, key=puntuacion_balanceada, reverse=True)
-        
-        # Selección por tiempo disponible
         tareas_seleccionadas = []
         tiempo_usado = 0
         
@@ -128,6 +115,7 @@ class AlgoritmoOptimizacionTareas:
                     dp[t] = dp[t - tarea.duracion_minutos] + tarea.valor
                     seleccion[t] = seleccion[t - tarea.duracion_minutos] + [tarea]
         
+        # Encontrar la mejor combinación
         mejor_tiempo = max(range(tiempo_maximo + 1), key=lambda t: dp[t])
         return seleccion[mejor_tiempo]
     
@@ -137,6 +125,7 @@ class AlgoritmoOptimizacionTareas:
         if len(tareas) <= 1:
             return tareas
         
+        # Simular costos de transición entre tipos de tarea
         def costo_transicion(tipo1: str, tipo2: str) -> int:
             transiciones_suaves = [("estudio", "ejercicio"), ("ejercicio", "personal")]
             if (tipo1, tipo2) in transiciones_suaves:
@@ -146,6 +135,7 @@ class AlgoritmoOptimizacionTareas:
             else:
                 return 5
         
+        # Algoritmo del vecino más cercano para secuenciación
         secuencia = [tareas[0]]
         tareas_restantes = tareas[1:]
         
@@ -190,20 +180,21 @@ class SistemaGestionTareas:
             tareas_por_fecha[fecha].append(tarea)
         return tareas_por_fecha
     
-    def obtener_tareas_para_fecha(self, fecha: datetime) -> List[Tarea]:
-        """Obtiene todas las tareas para una fecha específica"""
-        fecha_date = fecha.date()
-        return [tarea for tarea in self.lista_tareas if tarea.fecha_entrega.date() == fecha_date]
-    
     def generar_plan_optimizado(self) -> Dict[str, List[Tarea]]:
         """Genera un plan optimizado usando todos los algoritmos"""
         if not self.lista_tareas:
             return {}
         
+        # PASO 1: GREEDY - Selección inicial
         tareas_greedy = self.algoritmo_optimizacion.algoritmo_greedy_seleccion(self.lista_tareas)
+        
+        # PASO 2: PROGRAMACIÓN DINÁMICA - Optimización fina
         tareas_optimas = self.algoritmo_optimizacion.programacion_dinamica_optimizacion(tareas_greedy)
+        
+        # PASO 3: CAMINO MÁS CORTO - Secuenciación óptima
         secuencia_final = self.algoritmo_optimizacion.algoritmo_camino_corto_secuenciacion(tareas_optimas)
         
+        # Organizar por categorías de prioridad
         tareas_por_prioridad = {
             "HACER YA": [t for t in self.lista_tareas if t.categoria_prioridad == "HACER YA"],
             "PRÓXIMAS": [t for t in self.lista_tareas if t.categoria_prioridad == "PRÓXIMAS"],
@@ -217,363 +208,6 @@ class SistemaGestionTareas:
             'total_tareas': len(self.lista_tareas)
         }
 
-class VistaDiaria:
-    def __init__(self, parent, sistema_gestion):
-        self.parent = parent
-        self.sistema = sistema_gestion
-        self.fecha_actual = datetime.now()
-        self.configurar_interfaz()
-    
-    def configurar_interfaz(self):
-        # Frame principal
-        self.frame_principal = tk.Frame(self.parent, bg='white')
-        self.frame_principal.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-        
-        # Header
-        self.configurar_header()
-        
-        # Contenido principal
-        self.configurar_contenido_principal()
-        
-        self.actualizar_vista_diaria()
-    
-    def configurar_header(self):
-        frame_header = tk.Frame(self.frame_principal, bg='white', height=80)
-        frame_header.pack(fill=tk.X, pady=(0, 20))
-        frame_header.pack_propagate(False)
-        
-        # Título y fecha
-        frame_titulo = tk.Frame(frame_header, bg='white')
-        frame_titulo.pack(side=tk.LEFT, padx=20)
-        
-        logo_text = tk.Label(frame_titulo, text="", font=("Montserrat", 24), 
-                           bg='white', fg='#5F6368')
-        logo_text.pack(side=tk.LEFT)
-        
-        self.label_fecha = tk.Label(frame_titulo, text="", 
-                                  font=("Montserrat", 20, "bold"), bg='white', fg='#3C4043')
-        self.label_fecha.pack(side=tk.LEFT, padx=10)
-        
-        # Controles de navegación
-        frame_controles = tk.Frame(frame_header, bg='white')
-        frame_controles.pack(side=tk.RIGHT, padx=20)
-        
-        estilo_boton = {
-            'font': ('Montserrat', 10), 
-            'bg': '#F1F3F4', 
-            'fg': '#3C4043',
-            'relief': 'flat',
-            'bd': 0,
-            'padx': 15,
-            'pady': 8
-        }
-        
-        btn_hoy = tk.Button(frame_controles, text="Hoy", 
-                           command=self.ir_a_hoy, **estilo_boton)
-        btn_hoy.pack(side=tk.LEFT, padx=5)
-        
-        btn_anterior = tk.Button(frame_controles, text="‹ Ayer", 
-                                command=self.dia_anterior, **estilo_boton)
-        btn_anterior.pack(side=tk.LEFT, padx=5)
-        
-        btn_siguiente = tk.Button(frame_controles, text="Mañana ›", 
-                                 command=self.dia_siguiente, **estilo_boton)
-        btn_siguiente.pack(side=tk.LEFT, padx=5)
-    
-    def configurar_contenido_principal(self):
-        """Configura el contenido principal de la vista diaria"""
-        frame_contenido = tk.Frame(self.frame_principal, bg='white')
-        frame_contenido.pack(fill=tk.BOTH, expand=True)
-        
-        # Columna izquierda - Tareas del día organizadas por prioridad
-        self.configurar_columna_tareas(frame_contenido)
-        
-        # Columna derecha - Estadísticas y recomendaciones
-        self.configurar_columna_estadisticas(frame_contenido)
-    
-    def configurar_columna_tareas(self, parent):
-        """Configura la columna de tareas organizadas por prioridad"""
-        frame_tareas = tk.Frame(parent, bg='white')
-        frame_tareas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 15))
-        
-        # Título
-        titulo_tareas = tk.Label(frame_tareas, text="SECUENCIA OPTIMIZADA DEL DÍA", 
-                               font=("Montserrat", 14, "bold"), bg='white', fg='#3C4043')
-        titulo_tareas.pack(pady=(0, 20))
-        
-        # Frame para las tareas ordenadas
-        self.frame_secuencia_diaria = tk.Frame(frame_tareas, bg='white')
-        self.frame_secuencia_diaria.pack(fill=tk.BOTH, expand=True)
-    
-    def configurar_columna_estadisticas(self, parent):
-        """Configura la columna de estadísticas y recomendaciones"""
-        frame_estadisticas = tk.Frame(parent, bg='#F8F9FA', width=350)
-        frame_estadisticas.pack(side=tk.RIGHT, fill=tk.Y, padx=(15, 0))
-        frame_estadisticas.pack_propagate(False)
-        
-        # Título
-        titulo_estadisticas = tk.Label(frame_estadisticas, text="RESUMEN DEL DÍA", 
-                                     font=("Montserrat", 14, "bold"), bg='#F8F9FA', fg='#3C4043')
-        titulo_estadisticas.pack(pady=20)
-        
-        # Estadísticas
-        self.frame_estadisticas = tk.Frame(frame_estadisticas, bg='#F8F9FA')
-        self.frame_estadisticas.pack(fill=tk.X, padx=20, pady=10)
-        
-        # Recomendaciones de optimización
-        self.frame_recomendaciones = tk.Frame(frame_estadisticas, bg='#F8F9FA')
-        self.frame_recomendaciones.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-        
-        titulo_recomendaciones = tk.Label(self.frame_recomendaciones, text="RECOMENDACIONES", 
-                                        font=("Montserrat", 12, "bold"), bg='#F8F9FA', fg='#3C4043')
-        titulo_recomendaciones.pack(anchor='w', pady=(0, 10))
-        
-        self.label_recomendaciones = tk.Label(self.frame_recomendaciones, 
-                                            font=("Montserrat", 10), bg='#F8F9FA', fg='#5F6368',
-                                            justify=tk.LEFT, wraplength=300)
-        self.label_recomendaciones.pack(anchor='w')
-    
-    def actualizar_vista_diaria(self):
-        """Actualiza toda la vista diaria"""
-        # Actualizar fecha
-        self.actualizar_fecha_display()
-        
-        # Actualizar tareas del día en ORDEN ÓPTIMO
-        self.actualizar_secuencia_optimizada_dia()
-        
-        # Actualizar estadísticas
-        self.actualizar_estadisticas()
-        
-        # Actualizar recomendaciones
-        self.actualizar_recomendaciones()
-    
-    def actualizar_fecha_display(self):
-        """Actualiza el display de la fecha"""
-        formato_fecha = self.fecha_actual.strftime("%A, %d de %B de %Y")
-        # Capitalizar el día de la semana
-        formato_fecha = formato_fecha[0].upper() + formato_fecha[1:]
-        self.label_fecha.config(text=formato_fecha)
-    
-    def actualizar_secuencia_optimizada_dia(self):
-        """Actualiza las tareas del día en ORDEN ÓPTIMO de ejecución"""
-        # Limpiar frame anterior
-        for widget in self.frame_secuencia_diaria.winfo_children():
-            widget.destroy()
-        
-        # Obtener tareas para la fecha actual
-        tareas_dia = self.sistema.obtener_tareas_para_fecha(self.fecha_actual)
-        
-        if not tareas_dia:
-            # Mostrar mensaje de día libre
-            frame_vacio = tk.Frame(self.frame_secuencia_diaria, bg='white')
-            frame_vacio.pack(fill=tk.BOTH, expand=True)
-            
-            label_vacio = tk.Label(frame_vacio, 
-                                 text=" ¡No hay tareas programadas para hoy!\n\nPuedes agregar nuevas tareas o disfrutar de un día productivo organizando tus próximos objetivos.",
-                                 font=("Montserrat", 12), bg='white', fg='#95A5A6',
-                                 justify=tk.CENTER)
-            label_vacio.pack(expand=True)
-            return
-        
-        # Generar secuencia optimizada para las tareas del día
-        secuencia_optimizada = self.generar_secuencia_optimizada_dia(tareas_dia)
-        
-        # Mostrar encabezado de la secuencia
-        frame_encabezado = tk.Frame(self.frame_secuencia_diaria, bg='#E8F0FE')
-        frame_encabezado.pack(fill=tk.X, pady=(0, 15))
-        
-        label_encabezado = tk.Label(frame_encabezado, 
-                                  text=f" ORDEN RECOMENDADO",
-                                  font=("Montserrat", 12, "bold"), bg='#E8F0FE', fg="#2D15B8")
-        label_encabezado.pack(pady=10)
-        
-        # Mostrar cada tarea en orden con número de secuencia
-        for i, tarea in enumerate(secuencia_optimizada, 1):
-            self.crear_tarjeta_tarea_ordenada(self.frame_secuencia_diaria, tarea, i)
-    
-    def generar_secuencia_optimizada_dia(self, tareas_dia: List[Tarea]) -> List[Tarea]:
-        """Genera la secuencia optimizada para las tareas del día usando los algoritmos"""
-        if not tareas_dia:
-            return []
-        
-        # Usar el algoritmo greedy para ordenar las tareas del día
-        tiempo_disponible = 480  # 8 horas
-        secuencia_greedy = self.sistema.algoritmo_optimizacion.algoritmo_greedy_seleccion(
-            tareas_dia, tiempo_disponible
-        )
-        
-        # Aplicar optimización de secuenciación para mejor flujo
-        secuencia_final = self.sistema.algoritmo_optimizacion.algoritmo_camino_corto_secuenciacion(
-            secuencia_greedy
-        )
-        
-        return secuencia_final
-    
-    def crear_tarjeta_tarea_ordenada(self, parent, tarea: Tarea, numero_orden: int):
-        """Crea una tarjeta de tarea con número de orden en la secuencia"""
-        frame_tarjeta = tk.Frame(parent, bg='white', 
-                                relief='solid', borderwidth=1,
-                                highlightbackground=tarea.obtener_color_prioridad(),
-                                highlightthickness=2)
-        frame_tarjeta.pack(fill=tk.X, pady=6, padx=5)
-        
-        # Contenido principal
-        frame_contenido = tk.Frame(frame_tarjeta, bg='white', padx=15, pady=12)
-        frame_contenido.pack(fill=tk.X)
-        
-        # Línea 1: Número de orden y nombre
-        frame_linea1 = tk.Frame(frame_contenido, bg='white')
-        frame_linea1.pack(fill=tk.X)
-        
-        # Número de orden
-        frame_orden = tk.Frame(frame_linea1, bg='#F5422A')
-        frame_orden.pack(side=tk.LEFT)
-        
-        label_orden = tk.Label(frame_orden, text=f"{numero_orden}", 
-                             font=("Montserrat", 12, "bold"), bg="#F5422A", fg='white',
-                             padx=10, pady=5)
-        label_orden.pack()
-        
-        # Nombre de la tarea
-        label_nombre = tk.Label(frame_linea1, text=tarea.nombre, 
-                              font=("Montserrat", 11, "bold"), bg='white', fg='#3C4043',
-                              wraplength=450, justify=tk.LEFT, anchor='w')
-        label_nombre.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(10, 0))
-        
-        # Badge de prioridad
-        frame_badge = tk.Frame(frame_linea1, bg=tarea.obtener_color_prioridad())
-        frame_badge.pack(side=tk.RIGHT, padx=(10, 0))
-        
-        label_prioridad = tk.Label(frame_badge, text=f"P{tarea.prioridad}", 
-                                 font=("Montserrat", 9, "bold"), bg=tarea.obtener_color_prioridad(), fg='white',
-                                 padx=8, pady=2)
-        label_prioridad.pack()
-        
-        # Línea 2: Detalles principales
-        frame_linea2 = tk.Frame(frame_contenido, bg='white')
-        frame_linea2.pack(fill=tk.X, pady=(8, 0))
-        
-        # Calcular valor por minuto para mostrar por qué está en esta posición
-        valor_por_minuto = tarea.valor / tarea.duracion_minutos
-        
-        detalles_principales = [
-            f"⏱️ {tarea.duracion_minutos} min",
-            f"{tarea.categoria_prioridad}",
-            f"Valor/min: {valor_por_minuto:.1f}",
-            f"{tarea.dias_restantes}d restantes"
-        ]
-        
-        for detalle in detalles_principales:
-            label_det = tk.Label(frame_linea2, text=detalle,
-                               font=("Montserrat", 9), bg='white', fg='#5F6368')
-            label_det.pack(side=tk.LEFT, padx=(0, 15))
-        
-        # Línea 3: Descripción (si existe)
-        if tarea.descripcion and tarea.descripcion.strip():
-            frame_linea3 = tk.Frame(frame_contenido, bg='white')
-            frame_linea3.pack(fill=tk.X, pady=(6, 0))
-            
-            label_desc = tk.Label(frame_linea3, text=f"📝 {tarea.descripcion}",
-                                font=("Montserrat", 9), bg='white', fg='#7F8C8D',
-                                wraplength=500, justify=tk.LEFT, anchor='w')
-            label_desc.pack(fill=tk.X)
-        
-        # Línea 4: Razón de la posición (solo para las primeras tareas)
-        if numero_orden <= 3:
-            frame_linea4 = tk.Frame(frame_contenido, bg='white')
-            frame_linea4.pack(fill=tk.X, pady=(6, 0))
-    
-    def actualizar_estadisticas(self):
-        # Limpiar estadísticas anteriores
-        for widget in self.frame_estadisticas.winfo_children():
-            widget.destroy()
-        
-        # Obtener tareas del día
-        tareas_dia = self.sistema.obtener_tareas_para_fecha(self.fecha_actual)
-        
-        if not tareas_dia:
-            # Estadísticas para día sin tareas
-            stats = [
-                "Tareas totales: 0",
-                "Tiempo total: 0 min",
-                "Tareas críticas: 0",
-                "Tareas completables: 0"
-            ]
-        else:
-            # Generar secuencia optimizada para calcular estadísticas reales
-            secuencia_optimizada = self.generar_secuencia_optimizada_dia(tareas_dia)
-            tiempo_total = sum(t.duracion_minutos for t in tareas_dia)
-            tareas_criticas = len([t for t in tareas_dia if t.categoria_prioridad == "HACER YA"])
-            tareas_rapidas = len([t for t in tareas_dia if t.duracion_minutos <= 15])
-            
-            horas = tiempo_total // 60
-            minutos = tiempo_total % 60
-            tiempo_text = f"{horas}h {minutos}min" if horas > 0 else f"{minutos}min"
-            
-            stats = [
-                f"Tareas totales: {len(tareas_dia)}",
-                f"Tiempo total: {tiempo_text}",
-                f"Tareas críticas: {tareas_criticas}",
-                f"Tareas rápidas (<15min): {tareas_rapidas}",
-                f"Orden optimizado: {len(secuencia_optimizada)} tareas"
-            ]
-        
-        # Mostrar estadísticas
-        for stat in stats:
-            label_stat = tk.Label(self.frame_estadisticas, text=stat,
-                                font=("Montserrat", 10, "bold"), bg='#F8F9FA', fg='#3C4043',
-                                anchor='w')
-            label_stat.pack(fill=tk.X, pady=3)
-    
-    def actualizar_recomendaciones(self):
-        """Actualiza las recomendaciones basadas en las tareas del día"""
-        tareas_dia = self.sistema.obtener_tareas_para_fecha(self.fecha_actual)
-        
-        if not tareas_dia:
-            recomendaciones = [
-                "Este día está libre de tareas programadas",
-                "Es un buen momento para planificar la semana",
-                "Puedes adelantar tareas futuras o dedicar tiempo a proyectos personales"
-            ]
-        else:
-            # Generar secuencia optimizada para recomendaciones específicas
-            secuencia_optimizada = self.generar_secuencia_optimizada_dia(tareas_dia)
-            tareas_rapidas = [t for t in secuencia_optimizada if t.duracion_minutos <= 15]
-            tareas_largas = [t for t in secuencia_optimizada if t.duracion_minutos > 120]
-            
-            recomendaciones = []
-            
-            if tareas_rapidas:
-                recomendaciones.append(f"Comienza con {tareas_rapidas[0].nombre} ({tareas_rapidas[0].duracion_minutos}min)")           
-            
-            if tareas_largas:
-                recomendaciones.append(f"Programa descansos durante tarea(s) larga(s)")
-            
-            # Tiempo total
-            tiempo_total = sum(t.duracion_minutos for t in tareas_dia)
-            if tiempo_total > 480:
-                recomendaciones.append("Considera delegar o reprogramar algunas tareas")
-            elif tiempo_total < 240:
-                recomendaciones.append("Tienes tiempo disponible, agrega tareas pendientes")
-        
-        texto_recomendaciones = "\n".join(recomendaciones)
-        self.label_recomendaciones.config(text=texto_recomendaciones)
-    
-    def dia_anterior(self):
-        """Navega al día anterior"""
-        self.fecha_actual -= timedelta(days=1)
-        self.actualizar_vista_diaria()
-    
-    def dia_siguiente(self):
-        """Navega al día siguiente"""
-        self.fecha_actual += timedelta(days=1)
-        self.actualizar_vista_diaria()
-    
-    def ir_a_hoy(self):
-        """Vuelve al día actual"""
-        self.fecha_actual = datetime.now()
-        self.actualizar_vista_diaria()
-
 class CalendarioTareas:
     def __init__(self, parent, sistema_gestion):
         self.parent = parent
@@ -586,7 +220,10 @@ class CalendarioTareas:
         self.frame_calendario = tk.Frame(self.parent, bg='white')
         self.frame_calendario.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
         
+        # Controles de navegación
         self.configurar_header()
+        
+        # Leyenda de PRIORIDADES (más énfasis)
         self.configurar_leyenda_prioridades()
         
         # Frame principal para calendario y sidebar
@@ -597,8 +234,12 @@ class CalendarioTareas:
         self.frame_dias = tk.Frame(frame_principal, bg='white')
         self.frame_dias.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, pady=15)
         
+        # Sidebar de recomendaciones (derecha)
         self.configurar_sidebar_recomendaciones()
+        
+        # Panel de prioridades debajo del calendario
         self.configurar_panel_prioridades()
+        
         self.actualizar_calendario()
     
     def configurar_header(self):
@@ -611,12 +252,12 @@ class CalendarioTareas:
         frame_titulo = tk.Frame(frame_header, bg='white')
         frame_titulo.pack(side=tk.LEFT, padx=20)
         
-        logo_text = tk.Label(frame_titulo, text="", font=("Montserrat", 24), 
+        logo_text = tk.Label(frame_titulo, text="📅", font=("Arial", 24), 
                            bg='white', fg='#5F6368')
         logo_text.pack(side=tk.LEFT)
         
-        titulo = tk.Label(frame_titulo, text="Mi calendario", 
-                         font=("Montserrat", 20, "bold"), bg='white', fg='#3C4043')
+        titulo = tk.Label(frame_titulo, text="Mi Calendario", 
+                         font=("Arial", 20, "bold"), bg='white', fg='#3C4043')
         titulo.pack(side=tk.LEFT, padx=10)
         
         # Controles de navegación
@@ -624,7 +265,7 @@ class CalendarioTareas:
         frame_controles.pack(side=tk.RIGHT, padx=20)
         
         estilo_boton = {
-            'font': ('Montserrat', 10), 
+            'font': ('Arial', 10), 
             'bg': '#F1F3F4', 
             'fg': '#3C4043',
             'relief': 'flat',
@@ -646,7 +287,7 @@ class CalendarioTareas:
         btn_siguiente.pack(side=tk.LEFT, padx=5)
         
         self.label_mes_actual = tk.Label(frame_controles, 
-                                        font=("Montserrat", 16, "bold"), 
+                                        font=("Arial", 16, "bold"), 
                                         bg='white', fg='#3C4043')
         self.label_mes_actual.pack(side=tk.LEFT, padx=20)
     
@@ -655,8 +296,8 @@ class CalendarioTareas:
         frame_leyenda = tk.Frame(self.frame_calendario, bg='white')
         frame_leyenda.pack(fill=tk.X, pady=10)
         
-        tk.Label(frame_leyenda, text="NIVELES DE PRIORIDAD:", 
-                font=("Montserrat", 11, "bold"), bg='white', fg='#3C4043').pack(side=tk.LEFT, padx=10)
+        tk.Label(frame_leyenda, text="🎯 NIVELES DE PRIORIDAD:", 
+                font=("Arial", 11, "bold"), bg='white', fg='#3C4043').pack(side=tk.LEFT, padx=10)
         
         prioridades_leyenda = [
             ("HACER YA", "#FF4444"),      # Rojo intenso
@@ -672,20 +313,20 @@ class CalendarioTareas:
             canvas = tk.Canvas(frame_color, width=20, height=20, bg=color, 
                               highlightthickness=1, highlightbackground="#DADCE0")
             canvas.pack(side=tk.LEFT, padx=2)
-            canvas.create_text(10, 10, text="!", fill="white", font=("Montserrat", 12, "bold"))
+            canvas.create_text(10, 10, text="!", fill="white", font=("Arial", 12, "bold"))
             
-            tk.Label(frame_color, text=texto, font=("Montserrat", 10, "bold"), 
+            tk.Label(frame_color, text=texto, font=("Arial", 10, "bold"), 
                    bg='white', fg='#3C4043').pack(side=tk.LEFT)
     
     def configurar_panel_prioridades(self):
-        "Panel de prioridades"
+        """Panel de prioridades debajo del calendario - MEJORADO"""
         frame_prioridades = tk.Frame(self.frame_calendario, bg='#F8F9FA', 
                                    relief='solid', borderwidth=2)
         frame_prioridades.pack(fill=tk.X, pady=15, padx=10)
         
         # Título del panel
-        titulo_prioridades = tk.Label(frame_prioridades, text="PANEL DE PRIORIDADES: TAREAS ORGANIZADAS", 
-                                    font=("Montserrat", 14, "bold"), bg='#F8F9FA', fg='#3C4043')
+        titulo_prioridades = tk.Label(frame_prioridades, text="🚨 PANEL DE PRIORIDADES - TAREAS ORGANIZADAS", 
+                                    font=("Arial", 14, "bold"), bg='#F8F9FA', fg='#3C4043')
         titulo_prioridades.pack(pady=15)
         
         # Frame para las categorías de prioridad
@@ -695,6 +336,7 @@ class CalendarioTareas:
         self.actualizar_panel_prioridades()
     
     def actualizar_panel_prioridades(self):
+        """Actualiza el panel de prioridades con las tareas organizadas - MEJORADO"""
         # Limpiar panel anterior
         for widget in self.frame_categorias.winfo_children():
             widget.destroy()
@@ -705,10 +347,10 @@ class CalendarioTareas:
         
         # Crear una sección para cada categoría de prioridad
         categorias = [
-            ("HACER YA: Realizar inmediatamente", "HACER YA", "#FF4444"),
-            ("PRÓXIMAS: Tareas importantes para los próximos días", "PRÓXIMAS", "#FF8800"),
-            ("PUEDE ESPERAR: Tareas que pueden planificarse para más adelante", "PUEDE ESPERAR", "#FFBB33"),
-            ("BAJA PRIORIDAD: Tareas opcionales sin urgencia", "BAJA PRIORIDAD", "#00C851")
+            ("HACER YA - Tareas que deben realizarse inmediatamente", "HACER YA", "#FF4444"),
+            ("PRÓXIMAS - Tareas importantes para los próximos días", "PRÓXIMAS", "#FF8800"),
+            ("PUEDE ESPERAR - Tareas que pueden planificarse para más adelante", "PUEDE ESPERAR", "#FFBB33"),
+            ("BAJA PRIORIDAD - Tareas opcionales sin urgencia", "BAJA PRIORIDAD", "#00C851")
         ]
         
         for titulo, clave, color in categorias:
@@ -721,7 +363,7 @@ class CalendarioTareas:
             frame_header.pack(fill=tk.X, padx=2, pady=2)
             
             label_titulo = tk.Label(frame_header, text=titulo, 
-                                font=("Montserrat", 12, "bold"), 
+                                font=("Arial", 12, "bold"), 
                                 bg=color, fg='white', padx=15, pady=8,
                                 anchor='w')
             label_titulo.pack(fill=tk.X)
@@ -735,8 +377,8 @@ class CalendarioTareas:
             if not tareas_categoria:
                 # Mostrar mensaje si no hay tareas
                 label_vacio = tk.Label(frame_tareas_categoria, 
-                                     text="¡No hay tareas en esta categoría!",
-                                     font=("Montserrat", 10, "italic"), 
+                                     text="🎉 ¡No hay tareas en esta categoría!",
+                                     font=("Arial", 10, "italic"), 
                                      bg='#F8F9FA', fg='#95A5A6', 
                                      pady=20)
                 label_vacio.pack()
@@ -746,8 +388,8 @@ class CalendarioTareas:
                 contador_frame.pack(fill=tk.X, pady=(0, 8))
                 
                 label_contador = tk.Label(contador_frame, 
-                                        text=f"{len(tareas_categoria)} tarea(s) en esta categoría",
-                                        font=("Montserrat", 10, "bold"), 
+                                        text=f"📊 Total: {len(tareas_categoria)} tarea(s) en esta categoría",
+                                        font=("Arial", 10, "bold"), 
                                         bg='#F8F9FA', fg='#5F6368')
                 label_contador.pack(anchor='w')
                 
@@ -756,7 +398,7 @@ class CalendarioTareas:
                     self.crear_item_prioridad(frame_tareas_categoria, tarea, color)
     
     def crear_item_prioridad(self, parent, tarea, color_categoria):
-        "Tarjeta de tarea para el panel de prioridades"
+        """Crea una tarjeta de tarea para el panel de prioridades - MEJORADO"""
         frame_tarjeta = tk.Frame(parent, bg='white', 
                                 relief='solid', borderwidth=1,
                                 highlightbackground=color_categoria,
@@ -776,7 +418,7 @@ class CalendarioTareas:
         frame_header.pack(fill=tk.X)
         
         label_nombre = tk.Label(frame_header, text=tarea.nombre, 
-                            font=("Montserrat", 11, "bold"), bg='white', fg='#3C4043',
+                            font=("Arial", 11, "bold"), bg='white', fg='#3C4043',
                             wraplength=300, justify=tk.LEFT, anchor='w')
         label_nombre.pack(fill=tk.X)
         
@@ -789,14 +431,14 @@ class CalendarioTareas:
         frame_linea1.pack(fill=tk.X)
         
         detalles_linea1 = [
-            f"{tarea.fecha_entrega.strftime('%d/%m/%Y')}",
-            f"{tarea.duracion_minutos}min",
-            f"Prioridad: {tarea.prioridad}/10"
+            f"📅 {tarea.fecha_entrega.strftime('%d/%m/%Y')}",
+            f"⏱️ {tarea.duracion_minutos}min",
+            f"⭐ Prioridad: {tarea.prioridad}/10"
         ]
         
         for detalle in detalles_linea1:
             label_det = tk.Label(frame_linea1, text=detalle,
-                               font=("Montserrat", 9), bg='white', fg='#5F6368')
+                               font=("Arial", 9), bg='white', fg='#5F6368')
             label_det.pack(side=tk.LEFT, padx=(0, 15))
         
         # Segunda línea de detalles
@@ -805,12 +447,12 @@ class CalendarioTareas:
         
         # Mostrar días restantes con color según urgencia
         dias_color = "#E74C3C" if tarea.dias_restantes <= 1 else "#F39C12" if tarea.dias_restantes <= 3 else "#27AE60"
-        label_dias = tk.Label(frame_linea2, text=f"Días restantes: {tarea.dias_restantes}",
-                            font=("Montserrat", 9, "bold"), bg='white', fg=dias_color)
+        label_dias = tk.Label(frame_linea2, text=f"⏰ Días restantes: {tarea.dias_restantes}",
+                            font=("Arial", 9, "bold"), bg='white', fg=dias_color)
         label_dias.pack(side=tk.LEFT, padx=(0, 15))
         
-        label_urgencia = tk.Label(frame_linea2, text=f"Urgencia: {tarea.urgencia:.1f}/10",
-                                font=("Montserrat", 9), bg='white', fg='#5F6368')
+        label_urgencia = tk.Label(frame_linea2, text=f"🚨 Urgencia: {tarea.urgencia:.1f}/10",
+                                font=("Arial", 9), bg='white', fg='#5F6368')
         label_urgencia.pack(side=tk.LEFT)
         
         # Descripción (si existe)
@@ -819,7 +461,7 @@ class CalendarioTareas:
             frame_descripcion.pack(fill=tk.X, pady=(8, 0))
             
             label_descripcion = tk.Label(frame_descripcion, text=f"📝 {tarea.descripcion}",
-                                    font=("Montserrat", 9), bg='white', fg='#7F8C8D',
+                                    font=("Arial", 9), bg='white', fg='#7F8C8D',
                                     wraplength=300, justify=tk.LEFT, anchor='w')
             label_descripcion.pack(fill=tk.X)
     
@@ -870,7 +512,7 @@ class CalendarioTareas:
             frame_dia_header.grid_propagate(False)
             
             label = tk.Label(frame_dia_header, text=dia, 
-                           font=("Montserrat", 10, "bold"), bg='white', fg='#5F6368')
+                           font=("Arial", 10, "bold"), bg='white', fg='#5F6368')
             label.pack(expand=True)
         
         # Obtener primer día del mes y número de días
@@ -923,10 +565,10 @@ class CalendarioTareas:
             canvas_dia.place(x=5, y=5)
             canvas_dia.create_oval(2, 2, 23, 23, fill='#1A73E8', outline='')
             canvas_dia.create_text(12.5, 12.5, text=str(numero_dia), 
-                                 fill='white', font=("Montserrat", 10, "bold"))
+                                 fill='white', font=("Arial", 10, "bold"))
         else:
             label_numero = tk.Label(frame_dia, text=str(numero_dia), 
-                                  font=("Montserrat", 11), bg=frame_dia['bg'], fg=day_color)
+                                  font=("Arial", 11), bg=frame_dia['bg'], fg=day_color)
             label_numero.place(x=8, y=5)
         
         # Mostrar tareas para esta fecha
@@ -942,7 +584,7 @@ class CalendarioTareas:
                 else:
                     label_extra = tk.Label(frame_tareas, 
                                          text=f"+{len(tareas_dia) - 2} más",
-                                         font=("Montserrat", 8), bg=frame_dia['bg'],
+                                         font=("Arial", 8), bg=frame_dia['bg'],
                                          fg='#5F6368')
                     label_extra.pack(fill=tk.X, pady=(2, 0))
                     break
@@ -960,7 +602,7 @@ class CalendarioTareas:
         
         nombre_abreviado = tarea.nombre[:14] + "..." if len(tarea.nombre) > 14 else tarea.nombre
         label = tk.Label(frame_contenido, text=nombre_abreviado, 
-                        font=("Montserrat", 8), bg=color_tarea, fg='white',
+                        font=("Arial", 8), bg=color_tarea, fg='white',
                         anchor='w')
         label.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
@@ -972,8 +614,8 @@ class CalendarioTareas:
         frame_sidebar.pack_propagate(False)
         
         # Título del sidebar
-        titulo_sidebar = tk.Label(frame_sidebar, text="Tareas recomendadas", 
-                                font=("Montserrat", 14, "bold"), bg='#F8F9FA', fg='#3C4043')
+        titulo_sidebar = tk.Label(frame_sidebar, text="📋 Tareas Recomendadas", 
+                                font=("Arial", 14, "bold"), bg='#F8F9FA', fg='#3C4043')
         titulo_sidebar.pack(pady=20)
         
         # Frame para las recomendaciones
@@ -998,7 +640,7 @@ class CalendarioTareas:
         if not recomendaciones:
             label = tk.Label(self.frame_recomendaciones, 
                         text="No hay tareas pendientes\n¡Agrega algunas tareas!",
-                        font=("Montserrat", 11), fg="#5F6368", bg='#F8F9FA',
+                        font=("Arial", 11), fg="#5F6368", bg='#F8F9FA',
                         justify=tk.CENTER)
             label.pack(pady=20)
             return
@@ -1026,11 +668,11 @@ class CalendarioTareas:
         frame_header.pack(fill=tk.X)
         
         label_numero = tk.Label(frame_header, text=f"{numero}.", 
-                            font=("Montserrat", 10, "bold"), bg='white', fg='#3C4043')
+                            font=("Arial", 10, "bold"), bg='white', fg='#3C4043')
         label_numero.pack(side=tk.LEFT)
         
         label_nombre = tk.Label(frame_header, text=tarea.nombre, 
-                            font=("Montserrat", 10, "bold"), bg='white', fg='#3C4043',
+                            font=("Arial", 10, "bold"), bg='white', fg='#3C4043',
                             wraplength=200, justify=tk.LEFT)
         label_nombre.pack(side=tk.LEFT, padx=5, fill=tk.X, expand=True)
         
@@ -1044,7 +686,7 @@ class CalendarioTareas:
                     f"🚨 {tarea.dias_restantes}d")
         
         label_detalles = tk.Label(frame_detalles, text=detalles_text,
-                                font=("Montserrat", 8), bg='white', fg='#5F6368')
+                                font=("Arial", 8), bg='white', fg='#5F6368')
         label_detalles.pack(anchor='w')
 
 class InterfazSistemaGestionTareas:
@@ -1059,8 +701,8 @@ class InterfazSistemaGestionTareas:
         self.sistema = SistemaGestionTareas()
         self.configurar_interfaz()
         
-        # EJEMPLO
-        self.tareas_ejemplo()
+        # Cargar una lista MÁS AMPLIA de tareas de ejemplo automáticamente
+        self.cargar_tareas_ejemplo_amplio()
     
     def centrar_ventana(self):
         self.ventana_principal.update_idletasks()
@@ -1075,45 +717,35 @@ class InterfazSistemaGestionTareas:
         style = ttk.Style()
         style.theme_use('clam')
         style.configure('TNotebook', background='white')
-        style.configure('TNotebook.Tab', font=('Montserrat', 10, 'bold'), padding=[15, 5])
+        style.configure('TNotebook.Tab', font=('Arial', 10, 'bold'), padding=[15, 5])
         
         notebook = ttk.Notebook(self.ventana_principal)
         notebook.pack(fill=tk.BOTH, expand=True, padx=0, pady=0)
         
-        # Pestaña 1: Vista Diaria (NUEVA)
-        self.frame_diario = tk.Frame(notebook, bg='white')
-        notebook.add(self.frame_diario, text="Vista diaria")
-        
-        # Pestaña 2: Calendario
+        # Pestaña 1: Calendario
         self.frame_calendario = tk.Frame(notebook, bg='white')
-        notebook.add(self.frame_calendario, text="Calendario mensual")
+        notebook.add(self.frame_calendario, text="📅 Calendario")
         
-        # Pestaña 3: Gestión de Tareas
+        # Pestaña 2: Gestión de Tareas
         self.frame_gestion = tk.Frame(notebook, bg='white')
-        notebook.add(self.frame_gestion, text="+ Gestionar tareas")
+        notebook.add(self.frame_gestion, text="➕ Gestionar Tareas")
         
-        # Configurar todas las pestañas
-        self.configurar_pestana_diaria()
+        # Configurar ambas pestañas
         self.configurar_pestana_calendario()
         self.configurar_pestana_gestion()
     
-    def configurar_pestana_diaria(self):
-        """Configura la nueva pestaña de vista diaria"""
-        self.vista_diaria = VistaDiaria(self.frame_diario, self.sistema)
-    
     def configurar_pestana_calendario(self):
-        """Configura la pestaña de calendario mensual"""
+        # Calendario principal
         self.calendario = CalendarioTareas(self.frame_calendario, self.sistema)
     
     def configurar_pestana_gestion(self):
-        """Configura la pestaña de gestión de tareas"""
         # Frame principal con layout moderno
         frame_principal = tk.Frame(self.frame_gestion, bg='white')
         frame_principal.pack(fill=tk.BOTH, expand=True, padx=30, pady=30)
         
         # Título
         titulo = tk.Label(frame_principal, text="Gestión de Tareas", 
-                         font=("Montserrat", 24, "bold"), bg='white', fg='#3C4043')
+                         font=("Arial", 24, "bold"), bg='white', fg='#3C4043')
         titulo.pack(pady=(0, 20))
         
         # Dos columnas: formulario y lista
@@ -1139,7 +771,7 @@ class InterfazSistemaGestionTareas:
         frame_form.pack(fill=tk.BOTH, pady=(0, 20))
         
         titulo_form = tk.Label(frame_form, text="Nueva Tarea", 
-                              font=("Montserrat", 16, "bold"), bg='#F8F9FA', fg='#3C4043')
+                              font=("Arial", 16, "bold"), bg='#F8F9FA', fg='#3C4043')
         titulo_form.pack(pady=(0, 20))
         
         # Campos del formulario
@@ -1157,11 +789,11 @@ class InterfazSistemaGestionTareas:
             frame_campo.pack(fill=tk.X, pady=8)
             
             label = tk.Label(frame_campo, text=label_text, 
-                           font=("Montserrat", 10), bg='#F8F9FA', fg='#5F6368')
+                           font=("Arial", 10), bg='#F8F9FA', fg='#5F6368')
             label.pack(anchor='w')
             
             if tipo == "entry":
-                widget = tk.Entry(frame_campo, font=("Montserrat", 10), 
+                widget = tk.Entry(frame_campo, font=("Arial", 10), 
                                  relief='solid', borderwidth=1)
                 widget.pack(fill=tk.X, pady=2)
                 setattr(self, var_name, widget)
@@ -1211,14 +843,14 @@ class InterfazSistemaGestionTareas:
                 frame_text = tk.Frame(frame_campo, bg='#F8F9FA')
                 frame_text.pack(fill=tk.X, pady=2)
                 
-                widget = tk.Text(frame_text, height=3, font=("Montserrat", 10),
+                widget = tk.Text(frame_text, height=3, font=("Arial", 10),
                                relief='solid', borderwidth=1)
                 widget.pack(fill=tk.X)
                 setattr(self, var_name, widget)
         
         # Botón de agregar
         btn_agregar = tk.Button(frame_form, text="➕ Agregar Tarea", 
-                               font=("Montserrat", 12, "bold"), bg='#34A853', fg='white',
+                               font=("Arial", 12, "bold"), bg='#34A853', fg='white',
                                relief='flat', padx=20, pady=10,
                                command=self.agregar_tarea)
         btn_agregar.pack(pady=20)
@@ -1230,7 +862,7 @@ class InterfazSistemaGestionTareas:
         
         # Título
         titulo_lista = tk.Label(frame_lista, text="Todas las Tareas", 
-                               font=("Montserrat", 16, "bold"), bg='white', fg='#3C4043')
+                               font=("Arial", 16, "bold"), bg='white', fg='#3C4043')
         titulo_lista.pack(pady=(0, 15))
         
         # Treeview
@@ -1247,7 +879,7 @@ class InterfazSistemaGestionTareas:
         style.configure("Custom.Treeview.Heading", 
                        background="#F8F9FA",
                        foreground="#3C4043",
-                       font=('Montserrat', 10, 'bold'))
+                       font=('Arial', 10, 'bold'))
         
         columnas = ("ID", "Nombre", "Duración", "Prioridad", "Urgencia", 
                    "Días", "Fecha", "Tipo", "Prioridad")
@@ -1275,48 +907,61 @@ class InterfazSistemaGestionTareas:
         frame_botones.pack(fill=tk.X, pady=15)
         
         btn_eliminar = tk.Button(frame_botones, text="🗑️ Eliminar Seleccionada",
-                               font=("Montserrat", 10), bg='#EA4335', fg='white',
+                               font=("Arial", 10), bg='#EA4335', fg='white',
                                relief='flat', padx=15, pady=8,
                                command=self.eliminar_tarea)
         btn_eliminar.pack(side=tk.LEFT, padx=5)
         
         btn_actualizar = tk.Button(frame_botones, text="🔄 Actualizar Vista",
-                                 font=("Montserrat", 10), bg='#4285F4', fg='white',
+                                 font=("Arial", 10), bg='#4285F4', fg='white',
                                  relief='flat', padx=15, pady=8,
                                  command=self.actualizar_vistas)
         btn_actualizar.pack(side=tk.LEFT, padx=5)
     
-    def tareas_ejemplo(self):
+    def cargar_tareas_ejemplo_amplio(self):
+        """Carga una lista MÁS AMPLIA de tareas de ejemplo que muestren diferentes prioridades"""
         hoy = datetime.now()
         
         tareas_ejemplo = [
-            # HACER YA (Alta prioridad + Urgencia) - HOY
-            ("Entregar proyecto final", 180, 10, hoy, "trabajo", "Últimas correcciones antes de las 18:00"),
-            ("Diapositivas expo", 120, 7, hoy, "reunion", "Preparar slides para junta directiva"),
-            ("Pagar recibos de agua y luz", 5, 8, hoy, "personal", "Luz, agua e internet - EVITAR CORTES"),
-            ("Hacer ejercicio", 30, 5, hoy, "ejercicio", "30 min cardio + estiramientos"),
-
-            # PRÓXIMAS (Mañana)
-            ("Estudiar para examen parcial", 120, 8, hoy + timedelta(days=1), "estudio", "Repasar capítulos 1-5"),
-            ("Informe de avance mensual", 90, 7, hoy + timedelta(days=1), "trabajo", "Completar métricas del equipo"),
+            # HACER YA (Alta prioridad + Urgencia)
+            ("Entregar proyecto final", 180, 10, hoy + timedelta(days=0), "trabajo", "Últimas correcciones antes de las 18:00"),
+            ("Presentación ejecutiva", 120, 9, hoy + timedelta(days=1), "reunion", "Preparar slides para exposición"),
+            ("Pagar facturas vencidas", 30, 8, hoy + timedelta(days=0), "personal", "Luz, agua e internet - EVITAR CORTES"),
+            ("Cita médica urgente", 90, 9, hoy + timedelta(days=1), "personal", "Chequeo médico programado"),
             
-            # PUEDE ESPERAR (Próximos días)
-            ("Limpiar y organizar oficina", 60, 5, hoy + timedelta(days=2), "organizacion", "Archivar documentos antiguos"),
-            ("Hacer ejercicio cardiovascular", 45, 5, hoy + timedelta(days=2), "ejercicio", "30 min cardio + estiramientos"),
+            # PRÓXIMAS (Media-Alta prioridad)
+            ("Estudiar para examen parcial", 120, 8, hoy + timedelta(days=2), "estudio", "Repasar capítulos 1-5"),
+            ("Informe de avance mensual", 90, 7, hoy + timedelta(days=3), "trabajo", "Completar métricas del equipo"),
+            ("Comprar materiales proyecto", 60, 6, hoy + timedelta(days=2), "organizacion", "Ir a tienda de electrónica"),
+            ("Preparar cumpleaños familiar", 120, 6, hoy + timedelta(days=4), "personal", "Comprar regalo y pastel"),
             
-            # BAJA PRIORIDAD (Futuro)
-            ("Organizar fotos digitales", 120, 3, hoy + timedelta(days=7), "personal", "Clasificar fotos de vacaciones"),
-            ("Aprender nuevo software", 90, 2, hoy + timedelta(days=10), "estudio", "Tutoriales básicos"),
+            # PUEDE ESPERAR (Media prioridad)
+            ("Limpiar y organizar oficina", 60, 5, hoy + timedelta(days=7), "organizacion", "Archivar documentos antiguos"),
+            ("Hacer ejercicio cardiovascular", 45, 5, hoy + timedelta(days=5), "ejercicio", "30 min cardio + estiramientos"),
+            ("Leer libro profesional", 60, 4, hoy + timedelta(days=10), "estudio", "Capítulo 3: Estrategias avanzadas"),
+            ("Actualizar currículum", 90, 5, hoy + timedelta(days=14), "trabajo", "Agregar proyectos recientes"),
+            ("Reunión con equipo nuevo", 60, 4, hoy + timedelta(days=8), "reunion", "Conocer nuevos integrantes"),
             
-            # TAREAS REGULARES
+            # BAJA PRIORIDAD (Baja prioridad)
+            ("Organizar fotos digitales", 120, 3, hoy + timedelta(days=20), "personal", "Clasificar fotos de vacaciones"),
+            ("Aprender nuevo software", 90, 2, hoy + timedelta(days=25), "estudio", "Tutoriales básicos"),
+            ("Planificar vacaciones", 60, 2, hoy + timedelta(days=30), "personal", "Investigar destinos posibles"),
+            ("Limpiar garaje", 180, 1, hoy + timedelta(days=45), "organizacion", "Donar cosas que no se usen"),
+            ("Proyecto creativo personal", 120, 3, hoy + timedelta(days=35), "creativo", "Pintura o manualidades"),
+            ("Revisar suscripciones", 30, 2, hoy + timedelta(days=28), "personal", "Cancelar suscripciones no usadas"),
+            
+            # TAREAS REGULARES (Variadas prioridades)
             ("Hacer mercado semanal", 90, 4, hoy + timedelta(days=3), "personal", "Lista de supermercado"),
-            ("Revisar correos pendientes", 45, 5, hoy + timedelta(days=1), "trabajo", "Responder mensajes importantes"),
+            ("Revisar correos pendientes", 45, 5, hoy + timedelta(days=2), "trabajo", "Responder mensajes importantes"),
+            ("Ejercicio de fuerza", 60, 4, hoy + timedelta(days=4), "ejercicio", "Rutina de pesas"),
+            ("Planificar semana próxima", 30, 6, hoy + timedelta(days=6), "organizacion", "Agendar tareas y reuniones"),
         ]
         
         for tarea in tareas_ejemplo:
             self.sistema.agregar_tarea(*tarea)
         
         self.actualizar_vistas()
+        print(f"✅ Se cargaron {len(tareas_ejemplo)} tareas de ejemplo con diferentes prioridades")
     
     def obtener_fecha_desde_controles(self) -> datetime:
         """Obtiene la fecha desde los controles de entrada"""
@@ -1400,8 +1045,6 @@ class InterfazSistemaGestionTareas:
     def actualizar_vistas(self):
         """Actualiza todas las vistas del sistema"""
         self.actualizar_lista_tareas()
-        if hasattr(self, 'vista_diaria'):
-            self.vista_diaria.actualizar_vista_diaria()
         if hasattr(self, 'calendario'):
             self.calendario.actualizar_calendario()
 
