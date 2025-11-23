@@ -428,18 +428,20 @@ class VistaDiaria:
         """Genera la secuencia optimizada para las tareas del día usando los algoritmos"""
         if not tareas_dia:
             return []
-        
-        # Usar el algoritmo greedy para ordenar las tareas del día
-        tiempo_disponible = 480  # 8 horas
-        secuencia_greedy = self.sistema.algoritmo_optimizacion.algoritmo_greedy_seleccion(
-            tareas_dia, tiempo_disponible
+    
+        tareas_greedy = self.sistema.algoritmo_optimizacion.algoritmo_greedy_seleccion(
+            tareas_dia, 480  # 8 horas
         )
         
-        # Aplicar optimización de secuenciación para mejor flujo
+        tareas_optimas = self.sistema.algoritmo_optimizacion.programacion_dinamica_optimizacion(
+            tareas_greedy, 480
+        )
+        
         secuencia_final = self.sistema.algoritmo_optimizacion.algoritmo_camino_corto_secuenciacion(
-            secuencia_greedy
+            tareas_optimas
         )
         
+        print(f"SECUENCIA FINAL DEL DÍA: {[t.nombre for t in secuencia_final]}")
         return secuencia_final
     
     def crear_tarjeta_tarea_ordenada(self, parent, tarea: Tarea, numero_orden: int):
@@ -1233,10 +1235,9 @@ class InterfazSistemaGestionTareas:
                 
             elif tipo == "combobox":
                 widget = ttk.Combobox(frame_campo, values=[
-                    "estudio", "trabajo", "ejercicio", "personal", 
-                    "organizacion", "creativo", "reunion", "urgente"
+                    "estudio", "ejercicio", "personal", 
+                    "organizacion"
                 ], width=18)
-                widget.set("trabajo")
                 widget.pack(anchor='w', pady=2)
                 setattr(self, var_name, widget)
                 
@@ -1313,7 +1314,7 @@ class InterfazSistemaGestionTareas:
                                command=self.eliminar_tarea)
         btn_eliminar.pack(side=tk.LEFT, padx=5)
         
-        btn_actualizar = tk.Button(frame_botones, text="🔄 Actualizar Vista",
+        btn_actualizar = tk.Button(frame_botones, text="Actualizar Vista",
                                  font=("Montserrat", 10), bg='#4285F4', fg='white',
                                  relief='flat', padx=15, pady=8,
                                  command=self.actualizar_vistas)
@@ -1321,7 +1322,7 @@ class InterfazSistemaGestionTareas:
     
     def tareas_ejemplo(self):
         hoy = datetime.now()
-        
+        """
         tareas_ejemplo = [
             # HACER YA (Alta prioridad + Urgencia) - HOY
             ("Entregar proyecto final", 180, 10, hoy, "estudio", "Últimas correcciones antes de las 18:00"),
@@ -1344,6 +1345,32 @@ class InterfazSistemaGestionTareas:
             # TAREAS REGULARES
             ("Hacer mercado semanal", 90, 4, hoy + timedelta(days=3), "personal", "Lista de supermercado"),
             ("Tarea de IHC", 45, 5, hoy + timedelta(days=1), "estudio", "Actividad en DUTIC"),
+        ]
+
+        """
+    
+        # Tareas para HOY que suman 645 minutos (10.75 horas) - SUPERAN las 8 horas disponibles
+        tareas_ejemplo = [
+            # TAREAS CRÍTICAS (Alta prioridad + urgencia)
+            ("Entregar proyecto final", 180, 10, hoy, "estudio", "Últimas correcciones - ENTREGA HOY"),
+            ("Reunión cliente importante", 60, 9, hoy, "organizacion", "Presentación de avances - CRÍTICO"),
+            ("Estudiar para examen mañana", 120, 9, hoy, "estudio", "Examen parcial - PREPARACIÓN URGENTE"),
+            ("Pagar servicios vencidos", 15, 8, hoy, "personal", "Luz e internet - EVITAR CORTES"),
+            
+            # TAREAS IMPORTANTES (Media-alta prioridad)
+            ("Ejercicio cardio", 45, 6, hoy, "ejercicio", "Mantenimiento salud - 30min cardio"),
+            ("Planificar sprint siguiente", 30, 7, hoy, "organizacion", "Planning equipo desarrollo"),
+            ("Revisar correos pendientes", 40, 5, hoy, "organizacion", "Respuestas urgentes"),
+            
+            # TAREAS REGULARES (Media prioridad)
+            ("Compras supermercado", 90, 4, hoy, "personal", "Despensa semanal - puede postergarse"),
+            ("Limpieza oficina", 60, 3, hoy, "organizacion", "Organizar documentos"),
+            ("Leer artículo técnico", 50, 4, hoy, "estudio", "Actualización frameworks"),
+            
+            # TAREAS BAJA PRIORIDAD (Pueden esperar)
+            ("Organizar fotos vacaciones", 120, 2, hoy, "personal", "Clasificar fotos digitales"),
+            ("Aprender nuevo idioma", 30, 3, hoy, "estudio", "Práctica diaria opcional"),
+            ("Yoga relajación", 20, 2, hoy, "ejercicio", "Estiramientos opcionales"),
         ]
         
         for tarea in tareas_ejemplo:
