@@ -1,5 +1,5 @@
 from ordenar_pacientes import merge_sort_pacientes
-
+from asignacion import mochila_pacientes
 pacientes = [
     {"nombre": "Juan", "gravedad": 8, "tiempo": 3},
     {"nombre": "Jose", "gravedad": 4, "tiempo": 2},
@@ -11,3 +11,10 @@ pacientes = [
 # Utilizar divide y venceras para ordenar pacientes
 ordenados = merge_sort_pacientes(pacientes)
 print("Pacientes en orden de gravedad: ", ordenados)
+
+# tiempo maximo disponible (horas)
+tiempo_max = 6
+
+seleccion, gravedad_total = mochila_pacientes(ordenados, tiempo_max)
+print("\nPacientes seleccionados:", seleccion)
+print("Gravedad total:", gravedad_total)
