@@ -53,24 +53,28 @@ def grafo_dijkstra(grafo: GraphLink, dist, prev):
     return nuevo_grafo
 
 # Algoritmo de la mochila - Programación Dinámica
-def backpack(peso, valor, W):
-    n = len(peso)
-    
+def backpack(pedidos, W):
+    n = len(pedidos)
+
     dp = [[0] * (W + 1) for _ in range(n + 1)]
-    
+
     for i in range(1, n + 1):
+        peso = pedidos[i - 1].peso
+        valor = pedidos[i - 1].valor
+
         for j in range(W + 1):
-            if peso[i - 1] <= j:
-                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - peso[i - 1]] + valor[i - 1])
+            if peso <= j:
+                dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - peso] + valor)
             else:
                 dp[i][j] = dp[i - 1][j]
-    
+
     objetos = []
     j = W
+
     for i in range(n, 0, -1):
         if dp[i][j] != dp[i - 1][j]:
             objetos.append(i - 1)
-            j -= peso[i - 1]
-    
+            j -= pedidos[i - 1].peso  
+
     objetos.reverse()
     return dp[n][W], objetos
