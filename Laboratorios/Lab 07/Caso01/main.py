@@ -1,7 +1,7 @@
 from ordenar_pacientes import merge_sort_pacientes
 from asignacion import mochila_pacientes
 from rutas_dijkstra import dijkstra, grafo_hospital
-
+from interfaz import interfaz
 pacientes = [
     {"nombre": "Juan", "gravedad": 8, "tiempo": 3},
     {"nombre": "Jose", "gravedad": 4, "tiempo": 2},
@@ -23,5 +23,7 @@ print("\nPacientes seleccionados:", seleccion)
 print("Gravedad total:", gravedad_total)
 
 # Dijkstra
-ruta, costo = dijkstra(grafo_hospital, "Cama1", "Quirófano")
+ruta, costo = dijkstra(grafo_hospital, "Ambulancia", "Cama1")
 print("\nRuta óptima:", ruta, "Costo:", costo)
+
+interfaz()
