@@ -3,6 +3,11 @@ from algorithms import dijkstra, grafo_dijkstra, backpack
 
 grafo = GraphLink()
 
+
+print("----------------------")
+print("- Hallar ruta mínima -")
+print("----------------------")
+
 puntos = ["Matarani", "Mollendo", "La Joya", "El Pedregal", "Arequipa (PI)", "Via P. Sur"]
 for p in puntos:
     grafo.insert_vertex(p)
@@ -27,3 +32,19 @@ distancias, predecesores = dijkstra(grafo, inicio)
 
 nuevo_grafo = grafo_dijkstra(grafo, distancias, predecesores)
 nuevo_grafo.print_graph()
+
+print("\n-----------------------------")
+print("- Eligiendo carga de camión -")
+print("-----------------------------")
+
+pesos_contenedores = [4, 6, 2, 5, 8, 3]
+valores_contenedores = [20, 30, 10, 25, 40, 15]
+nombres_contenedores = ["Alimentos", "Electronicos", "Maquinaria", "Textiles", "Minerales", "Quimicos"]
+capacidad_camion = 15
+
+valor_maximo, objetos_indices = backpack(pesos_contenedores, valores_contenedores, 15)
+
+print(f"Valor máximo = {valor_maximo}")
+
+for i in objetos_indices:
+    print(f"{nombres_contenedores[i]} = {valores_contenedores[i]}")
