@@ -161,8 +161,8 @@ class AlgoritmoOptimizacionTareas:
                 return 2
                 
             # TRANSICIONES DIFÍCILES  
-            if (tipo1 in ["ejercicio", "personal"] and 
-                tipo2 in ["estudio", "organizacion"]):
+            if (tipo1 in ["ejercicio", "estudio"] and 
+                tipo2 in ["estudio", "ejercicio"]):
                 return 5
                 
             return 3
@@ -1376,9 +1376,9 @@ class InterfazSistemaGestionTareas:
     
     def tareas_ejemplo(self):
         hoy = datetime.now()
-        """
+   
         tareas_ejemplo = [
-            # HACER YA (Alta prioridad + Urgencia) - HOY
+            # Ejemplo uno: Tarea 
             ("Entregar proyecto final", 180, 10, hoy, "estudio", "Últimas correcciones antes de las 18:00"),
             ("Diapositivas expo", 120, 7, hoy, "estudio", "Preparar slides para junta directiva"),
             ("Pagar recibos de agua y luz", 5, 8, hoy, "personal", "Luz, agua e internet - EVITAR CORTES"),
@@ -1387,45 +1387,23 @@ class InterfazSistemaGestionTareas:
             # PRÓXIMAS (Mañana)
             ("Estudiar para examen parcial", 120, 8, hoy + timedelta(days=1), "estudio", "Repasar capítulos 1-5"),
             ("Informe de avance mensual", 90, 7, hoy + timedelta(days=1), "estudio", "Completar métricas del equipo"),
+            ("Tarea de IHC", 45, 5, hoy + timedelta(days=1), "estudio", "Actividad en DUTIC"),
+            ("Avance proyecto ADA", 120, 8, hoy + timedelta(days=1), "estudio", "Repasar capítulos 1-5"),
             
             # PUEDE ESPERAR (Próximos días)
-            ("Limpiar y organizar oficina", 60, 5, hoy + timedelta(days=2), "organizacion", "Archivar documentos antiguos"),
+            ("Presentación avance final IHC", 180, 10, hoy + timedelta(days=2), "estudio", "Repasar capítulos 1-5"),
+            ("Limpiar y organizar escritorio", 30, 4, hoy + timedelta(days=2), "organizacion", "Archivar documentos antiguos"),
             ("Hacer ejercicio cardiovascular", 45, 5, hoy + timedelta(days=2), "ejercicio", "30 min cardio + estiramientos"),
             
             # BAJA PRIORIDAD (Futuro)
-            ("Organizar fotos digitales", 120, 3, hoy + timedelta(days=7), "personal", "Clasificar fotos de vacaciones"),
-            ("Aprender nuevo software", 90, 2, hoy + timedelta(days=10), "estudio", "Tutoriales básicos"),
-            
-            # TAREAS REGULARES
-            ("Hacer mercado semanal", 90, 4, hoy + timedelta(days=3), "personal", "Lista de supermercado"),
-            ("Tarea de IHC", 45, 5, hoy + timedelta(days=1), "estudio", "Actividad en DUTIC"),
+            ("Organizar archivos", 120, 1, hoy + timedelta(days=3), "personal", "Clasificar fotos de vacaciones"),
+            ("Aprender C++", 90, 2, hoy + timedelta(days=3), "estudio", "Tutoriales básicos"),
+            ("Hacer mercado semanal", 90, 1, hoy + timedelta(days=3), "personal", "Lista de supermercado"),
+            ("Presentación avance final ADA", 180, 10, hoy + timedelta(days=3), "estudio", "PRoyecto final"),
+            ("Estudiar para examen parcial ADA", 120, 9, hoy + timedelta(days=3), "estudio", "Repasar capítulos 1-5"),
         ]
-
-        """
     
-        # Tareas para HOY que suman 645 minutos (10.75 horas) - SUPERAN las 8 horas disponibles
-        tareas_ejemplo = [
-            # TAREAS CRÍTICAS (Alta prioridad + urgencia)
-            ("Entregar proyecto final", 180, 10, hoy, "estudio", "Últimas correcciones - ENTREGA HOY"),
-            ("Reunión cliente importante", 60, 9, hoy, "organizacion", "Presentación de avances - CRÍTICO"),
-            ("Estudiar para examen mañana", 120, 9, hoy, "estudio", "Examen parcial - PREPARACIÓN URGENTE"),
-            ("Pagar servicios vencidos", 15, 8, hoy, "personal", "Luz e internet - EVITAR CORTES"),
-            
-            # TAREAS IMPORTANTES (Media-alta prioridad)
-            ("Ejercicio cardio", 45, 6, hoy, "ejercicio", "Mantenimiento salud - 30min cardio"),
-            ("Planificar sprint siguiente", 30, 7, hoy, "organizacion", "Planning equipo desarrollo"),
-            ("Revisar correos pendientes", 40, 5, hoy, "organizacion", "Respuestas urgentes"),
-            
-            # TAREAS REGULARES (Media prioridad)
-            ("Compras supermercado", 90, 4, hoy, "personal", "Despensa semanal - puede postergarse"),
-            ("Limpieza oficina", 60, 3, hoy, "organizacion", "Organizar documentos"),
-            ("Leer artículo técnico", 50, 4, hoy, "estudio", "Actualización frameworks"),
-            
-            # TAREAS BAJA PRIORIDAD (Pueden esperar)
-            ("Organizar fotos vacaciones", 120, 2, hoy, "personal", "Clasificar fotos digitales"),
-            ("Aprender nuevo idioma", 30, 3, hoy, "estudio", "Práctica diaria opcional"),
-            ("Yoga relajación", 20, 2, hoy, "ejercicio", "Estiramientos opcionales"),
-        ]
+       
         
         for tarea in tareas_ejemplo:
             self.sistema.agregar_tarea(*tarea)
