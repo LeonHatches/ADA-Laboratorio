@@ -1,6 +1,5 @@
 """
 Algoritmo Iterative Greedy (IG)
-PERSONA 5: Implementa el algoritmo IG completo
 """
 import random
 

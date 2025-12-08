@@ -1,6 +1,5 @@
 """
 Programa Principal - Comparación IG vs ILS
-PERSONA 7: Implementa este archivo con la ejecución y comparación de ambos algoritmos
 """
 
 import time

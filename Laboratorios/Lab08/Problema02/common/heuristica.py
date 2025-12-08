@@ -1,6 +1,5 @@
 """
 Heurística Constructiva - Greedy/NEH
-PERSONA 3: Implementa la construcción de solución inicial y reconstrucción
 """
 from .problema import FlowShop
 
